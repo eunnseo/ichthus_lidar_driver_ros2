@@ -1,0 +1,41 @@
+/**:
+  ros__parameters:
+    ###
+    ### pcap file used to replay
+    ###
+    pcap_file: ""
+
+    ###
+    ### scale factor of timer wait, which emulates the interarrival times of lidar msgs
+    ###
+    pcap_wait_factor : 0.6
+
+    ###
+    ### lidar model selection:
+    ### OS1-64, VLP-16, PDR-64
+    ###
+    model: "OS1-64"
+    ns: "rear"
+    frame_id: "base_link"
+
+    ###
+    ### ip address and port number of each lidar
+    ### ip address selection: "192.168.1.2", "192.168.1.3"
+    ### lidar port selection: 7502, 7504
+    ###
+    ip_addr: "192.168.1.3"
+    lidar_port: 7504
+
+    ###
+    ### using imu
+    ###
+    imu_port: 7503
+    use_imu: false
+
+    ###
+    ### publish rate of point cloud
+    ###
+    period_ms: 100
+    # rate: 10 # Hz
+
+    chan_used: 32
