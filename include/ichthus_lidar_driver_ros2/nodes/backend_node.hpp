@@ -3,9 +3,7 @@
 
 #include <iostream>
 #include <chrono>
-
 #include <cinttypes>
-#include <iomanip>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -62,11 +60,6 @@ namespace ichthus_lidar_driver_ros2
       void callbackLiDARCloud(const sensor_msgs::msg::PointCloud2::UniquePtr msg, const int cld_idx);
       void callbackOdomCan(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg);
       void callbackTimer();
-
-      // deblurring
-      std::deque<sensor::Velocity> velocity_queue_;
-      std::deque<geometry_msgs::msg::TwistWithCovarianceStamped> twist_queue_;
-      bool deblurringPointCloud(const tf2::Transform &tf2_base_link_to_sensor, sensor_msgs::msg::PointCloud2 &points);
 
     }; // class BackendNode
 

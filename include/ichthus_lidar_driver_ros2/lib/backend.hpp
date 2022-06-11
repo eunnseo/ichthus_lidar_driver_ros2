@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <queue>
+#include <iomanip>
 
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
@@ -13,6 +14,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <pcl/common/transforms.h>
+#include <pcl/io/pcd_io.h>
 
 #include <ichthus_lidar_driver_ros2/sensor/velocity.hpp>
 #include <ichthus_lidar_driver_ros2/sensor/point_types.h>
@@ -51,14 +53,14 @@ namespace ichthus_lidar_driver_ros2
 
       // void clearCloud();
 
-      tf2::Transform tf2_base_link_to_sensor;
-      void addVelocity(sensor::Velocity &vel);
-      bool deblurringPointCloud(sensor_msgs::msg::PointCloud2 &points);
+      void addVelocity(const sensor::Velocity &vel);
+      bool deblurringPointCloud(pcl::PointCloud<PointT> &cloud);
 
     private:
       std::string ns_;
       Pose pose_;
       Eigen::Matrix4f transform_;
+      tf2::Transform tf2_base_link_to_sensor_;
 
       pcl::PointCloud<PointT> tf_cloud_;
       pcl::PointCloud<PointT> in_cloud_;

@@ -11,9 +11,6 @@
 #include <ichthus_lidar_driver_ros2/lib/frontend.hpp>
 #include <ichthus_lidar_driver_ros2/msg/packet.hpp>
 
-// debugging
-// #include <pcl/io/pcd_io.h>
-
 namespace ichthus_lidar_driver_ros2
 {
   namespace frontend_node
