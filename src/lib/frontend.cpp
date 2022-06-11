@@ -77,9 +77,7 @@ namespace ichthus_lidar_driver_ros2
         packet_queue_.pop();
       }
 
-      // debugging
-      // static int seq = 0;
-      // pcl::io::savePCDFileASCII("/home/eunseo/tmp/" + std::to_string(seq++) + ".pcd", cloud);
+      
 
       // std::cout << "point cloud" << std::endl;
       // std::cout << "x: " << cloud.points[0].x << std::endl;
