@@ -10,6 +10,8 @@
 
 #include <ichthus_lidar_driver_ros2/sensor/point_types.h>
 
+// #define DEBUGGING
+
 namespace ichthus_lidar_driver_ros2
 {
   namespace sensor
@@ -26,9 +28,14 @@ namespace ichthus_lidar_driver_ros2
       LiDARInterface(double lidar_origin_to_beam_origin_mm,
                      const std::vector<double> &transform,
                      const std::vector<double> &azimuth_angles_deg,
-                     const std::vector<double> &altitude_angles_deg)
-          : lidar_origin_to_beam_origin_mm_(lidar_origin_to_beam_origin_mm), azimuth_angles_deg_(azimuth_angles_deg), altitude_angles_deg_(altitude_angles_deg)
+                     const std::vector<double> &altitude_angles_deg,
+                     const std::vector<int64_t> &used_channels,
+                     const std::vector<int64_t> &used_azimuths)
+          : lidar_origin_to_beam_origin_mm_(lidar_origin_to_beam_origin_mm),
+            azimuth_angles_deg_(azimuth_angles_deg), altitude_angles_deg_(altitude_angles_deg),
+            used_channels_(used_channels), used_azimuths_(used_azimuths)
       {
+        std::cout << "LiDARInterface construction\n";
         lidar_to_sensor_transform_ = Matrix4d::Identity();
         for (uint32_t col = 0; col < lidar_to_sensor_transform_.cols(); col++)
         {
@@ -43,15 +50,23 @@ namespace ichthus_lidar_driver_ros2
 
       virtual void initResolution() = 0;
 
-      virtual void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud) = 0;
+      virtual void initUsedPoints() = 0;
+
+      virtual void printIsUsedPoint() = 0;
       
+      virtual void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud) = 0;
+
     protected:
       double lidar_origin_to_beam_origin_mm_;
       Matrix4d lidar_to_sensor_transform_;
       std::vector<double> azimuth_angles_deg_;
       std::vector<double> altitude_angles_deg_;
-      
-      size_t num_azimuth_; // the number of measurements per scan (e.g. 512, 1024, 2048)
+
+      std::vector<int64_t> used_channels_;
+      std::vector<int64_t> used_azimuths_;
+      std::vector<std::vector<bool>> is_used_point_;
+
+      size_t num_azimuth_;  // the number of measurements per scan (e.g. 512, 1024, 2048)
       size_t num_channels_; // the number of channels
 
       struct LookUpTable

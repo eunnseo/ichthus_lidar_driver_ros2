@@ -20,12 +20,18 @@ namespace ichthus_lidar_driver_ros2
         OusterI64(double lidar_origin_to_beam_origin_mm,
                   const std::vector<double> &transform,
                   const std::vector<double> &azimuth_angles_deg,
-                  const std::vector<double> &altitude_angles_deg);
+                  const std::vector<double> &altitude_angles_deg,
+                  const std::vector<int64_t> &used_channels_,
+                  const std::vector<int64_t> &used_azimuths_);
 
         void initLookUpTable();
 
         void initResolution();
 
+        void initUsedPoints();
+
+        void printIsUsedPoint();
+        
         void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud);
 
       private:

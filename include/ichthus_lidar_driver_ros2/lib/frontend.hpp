@@ -61,6 +61,15 @@ namespace ichthus_lidar_driver_ros2
         lidar_origin_to_beam_origin_mm_ = lidar_origin_to_beam_origin_mm;
       }
 
+      inline void setUsedChannels(const std::vector<int64_t> &used_channels)
+      {
+        used_channels_ = used_channels;
+      }
+      inline void setUsedAzimuths(const std::vector<int64_t> &used_azimuths)
+      {
+        used_azimuths_ = used_azimuths;
+      }
+
       void init();
       net::PacketState poll();
       bool readLiDARPacket(uint8_t *buf, int max_buf_size, std::string &dst_ipaddr, ssize_t &nbytes);
@@ -84,6 +93,9 @@ namespace ichthus_lidar_driver_ros2
       std::vector<double> beam_azimuth_angles_;
       std::vector<double> lidar_to_sensor_transform_;
       double lidar_origin_to_beam_origin_mm_;
+
+      std::vector<int64_t> used_channels_;
+      std::vector<int64_t> used_azimuths_;
 
       std::shared_ptr<sensor::LiDARInterface> lidar_ptr_;
 

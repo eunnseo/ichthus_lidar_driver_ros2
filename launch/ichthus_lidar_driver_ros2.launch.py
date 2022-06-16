@@ -21,6 +21,7 @@ import ament_index_python
 
 import yaml
 
+### TODO: timestamp 동기화 명령어 수행
 
 def launch_setup(context, *args, **kwargs):
   frontend_front_param_path = LaunchConfiguration("frontend_front_param_path").perform(context)

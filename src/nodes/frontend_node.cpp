@@ -30,7 +30,20 @@ namespace ichthus_lidar_driver_ros2
       param_.beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
       param_.lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
       param_.lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
+      param_.used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      param_.used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
       /*******************************/
+
+      // for (size_t i = 0; i < param_.used_channels.size(); i++)
+      // {
+      //   std::cout << param_.used_channels[i] << " ";
+      // }
+      // std::cout << "\n";
+      // for (size_t j = 0; j < param_.used_azimuths.size(); j++)
+      // {
+      //   std::cout << param_.used_azimuths[j] << " ";
+      // }
+      // std::cout << "\n";
       
       if (!param_.use_pcap)
       {
@@ -39,10 +52,14 @@ namespace ichthus_lidar_driver_ros2
         frontend_.setLiDARPort(param_.lidar_port);
         frontend_.setIMUPort(param_.imu_port);
 
+        // TODO: 파라미터 값을 frontend_node에 저장할 필요 없이, 바로 frontend에게 넘겨주면 됨
         frontend_.setBeamAzimuthAngles(param_.beam_azimuth_angles);
         frontend_.setBeamAltitudeAngles(param_.beam_altitude_angles);
         frontend_.setToSensorTransform(param_.lidar_to_sensor_transform);
         frontend_.setToBeamOrigin(param_.lidar_origin_to_beam_origin_mm);
+
+        frontend_.setUsedChannels(param_.used_channels);
+        frontend_.setUsedAzimuths(param_.used_azimuths);
 
         frontend_.init();
       }
