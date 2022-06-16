@@ -22,6 +22,7 @@ import ament_index_python
 import yaml
 
 ### TODO: timestamp 동기화 명령어 수행
+### TODO: 설정된 params 상태 출력
 
 def launch_setup(context, *args, **kwargs):
   frontend_front_param_path = LaunchConfiguration("frontend_front_param_path").perform(context)
@@ -47,24 +48,36 @@ def launch_setup(context, *args, **kwargs):
   calibration_3_param_path = LaunchConfiguration("calibration_3_param_path").perform(context)
   with open(calibration_3_param_path, "r") as f:
     calibration_3_param = yaml.safe_load(f)["/**"]["ros__parameters"]
-  
-  # can_odom_node = Node(
-  #   package='odom_can',
-  #   executable='odom_node',
-  #   name='odom_can',
-  #   parameters=[
-  #     {
-  #       "use_sim_time": LaunchConfiguration("use_sim_time")
-  #     }],
-  # )
 
-  container = ComposableNodeContainer(
-    name='ichthus_lidar_driver_ros2_container',
-    namespace='',
-    package='rclcpp_components',
-    executable='component_container',
-    composable_node_descriptions=[
-      
+  setup_type = LaunchConfiguration("setup_type").perform(context)
+  composable_node_list = []
+  if setup_type == "CENTER":
+    print("CENTER")
+    composable_node_list = [
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::frontend_node::FrontendNode',
+        name='frontend_center',
+        parameters=[frontend_center_param, calibration_3_param,
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      ),
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
+        name='backend',
+        parameters=[backend_param, 
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      )
+    ]
+  elif setup_type == "FRONT-REAR":
+    print("FRONT-REAR")
+    composable_node_list = [
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
         plugin='ichthus_lidar_driver_ros2::frontend_node::FrontendNode',
@@ -85,7 +98,6 @@ def launch_setup(context, *args, **kwargs):
           }],
         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
       ),
-
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
         plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
@@ -96,52 +108,29 @@ def launch_setup(context, *args, **kwargs):
           }],
         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
       )
-    ],
-    output='screen',
-  )
+    ]
+  elif setup_type == "RIGHT-LEFT":
+    print("RIGHT-LEFT")
+  else:
+    print("do nothing")
 
-  center_container = ComposableNodeContainer(
+  container = ComposableNodeContainer(
     name='ichthus_lidar_driver_ros2_container',
     namespace='',
     package='rclcpp_components',
     executable='component_container',
-    composable_node_descriptions=[
-      
-      ComposableNode(
-        package='ichthus_lidar_driver_ros2',
-        plugin='ichthus_lidar_driver_ros2::frontend_node::FrontendNode',
-        name='frontend_center',
-        parameters=[frontend_center_param, calibration_3_param,
-          {
-            "use_sim_time": LaunchConfiguration("use_sim_time")
-          }],
-        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-      ),
-
-      ComposableNode(
-        package='ichthus_lidar_driver_ros2',
-        plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
-        name='backend',
-        parameters=[backend_param, 
-          {
-            "use_sim_time": LaunchConfiguration("use_sim_time")
-          }],
-        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-      )
-    ],
+    composable_node_descriptions=composable_node_list,
     output='screen',
   )
 
   group = GroupAction(
     [
       PushRosNamespace(""),
-      # container,
-      center_container,
+      container,
     ]
   )
 
   return [group]
-  # return [group, can_odom_node]
 
 def get_param_file(package_name, file_name):
   """Pass the given param file as a LaunchConfiguration."""
@@ -168,6 +157,7 @@ def generate_launch_description():
   add_launch_arg("backend_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/backend_default.param.yaml",], "", )
   add_launch_arg("calibration_2_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/OSI64_2.yaml",], "", )
   add_launch_arg("calibration_3_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/OSI64_3.yaml",], "", )
+  add_launch_arg("setup_type", "CENTER") # FRONT-REAR, RIGHT-LEFT, CENTER
 
   # component
   add_launch_arg("use_intra_process", "true", "use ROS2 component container communication")
