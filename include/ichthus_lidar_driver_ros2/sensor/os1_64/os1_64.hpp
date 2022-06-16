@@ -30,8 +30,6 @@ namespace ichthus_lidar_driver_ros2
 
         void initUsedPoints();
 
-        void printIsUsedPoint();
-        
         void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud);
 
       private:

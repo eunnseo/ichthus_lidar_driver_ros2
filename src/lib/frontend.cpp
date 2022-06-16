@@ -38,7 +38,6 @@ namespace ichthus_lidar_driver_ros2
       lidar_ptr_->initResolution();
       lidar_ptr_->initLookUpTable();
       lidar_ptr_->initUsedPoints();
-      // lidar_ptr_->printIsUsedPoint();
     }
 
     net::PacketState Frontend::poll()

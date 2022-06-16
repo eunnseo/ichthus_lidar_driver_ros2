@@ -10,8 +10,6 @@
 
 #include <ichthus_lidar_driver_ros2/sensor/point_types.h>
 
-// #define DEBUGGING
-
 namespace ichthus_lidar_driver_ros2
 {
   namespace sensor
@@ -52,8 +50,6 @@ namespace ichthus_lidar_driver_ros2
 
       virtual void initUsedPoints() = 0;
 
-      virtual void printIsUsedPoint() = 0;
-      
       virtual void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud) = 0;
 
     protected:

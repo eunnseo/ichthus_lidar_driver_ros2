@@ -82,39 +82,11 @@ namespace ichthus_lidar_driver_ros2
         num_channels_ = 64;
       }
 
-      void OusterI64::printIsUsedPoint()
-      {
-        std::cout << "printIsUsedPoint..\n";
-        std::cout << "is_used_point_.size() = " << is_used_point_.size() << std::endl;
-        std::cout << "is_used_point_[i].size() : " << std::endl;
-        for (size_t i = 0; i < is_used_point_.size(); i++)
-        {
-          std::cout << is_used_point_[i].size() << " ";
-          if (i % 10 == 0)
-            std::cout << "\n";
-        }
-        std::cout << "---\n";
-
-        std::cout << "is_used_point_[i] values : " << std::endl;
-        for (size_t i = 0; i < is_used_point_.size(); i++)
-        {
-          std::cout << "i = " << i << std::endl;
-          for (size_t j = 0; j < is_used_point_[i].size(); j++)
-          {
-            std::cout << is_used_point_[i][j] << " ";
-          }
-          std::cout << "\n";
-        }
-        std::cout << "---\n";
-        std::cout << "\n";
-        std::cout << "\n";
-      }
-
       void OusterI64::initUsedPoints()
       {
-        std::cout << "initUsedPoints..\n";
-        // std::cout << "num_channels_ = " << num_channels_ << std::endl;
-        // std::cout << "num_azimuth_ = " << num_azimuth_ << std::endl;
+        // std::cout << "initUsedPoints..\n";
+        // std::cout << "used_azimuths_.size() = " << used_azimuths_.size() << std::endl;
+        // std::cout << "used_channels_.size() = " << used_channels_.size() << std::endl;
 
         for (size_t i = 0; i < num_channels_; i++)
         {
@@ -125,120 +97,44 @@ namespace ichthus_lidar_driver_ros2
           }
         }
 
-        // std::cout << "---";
-        // std::cout << "is_used_point_.size() = " << is_used_point_.size() << std::endl;
-        // std::cout << "is_used_point_[i].size() : " << std::endl;
-        for (size_t i = 0; i < is_used_point_.size(); i++)
-        {
-          std::cout << is_used_point_[i].size() << " ";
-          if (i % 10 == 0)
-            std::cout << "\n";
-        }
-        std::cout << "\n";
-
-        // std::cout << "is_used_point_[i] values : " << std::endl;
-        // for (size_t i = 0; i < is_used_point_.size(); i++)
-        // {
-        //   std::cout << "i = " << i << std::endl;
-        //   for (size_t j = 0; j < is_used_point_[i].size(); j++)
-        //   {
-        //     std::cout << is_used_point_[i][j] << " ";
-        //   }
-        //   std::cout << "\n";
-        // }
-        // std::cout << "---\n";
-
+        size_t min, max;
         std::vector<int64_t> azim_idx_arr;
         std::vector<int64_t> chan_idx_arr;
-        size_t min, max;
-
-        std::cout << "used_azimuths_.size() = " << used_azimuths_.size() << std::endl;
-        std::cout << "used_channels_.size() = " << used_channels_.size() << std::endl;
-
-        std::cout << "azimuths :\n";
         for (size_t i = 0; i < used_azimuths_.size(); i += 2)
         {
           min = used_azimuths_[i];
           max = used_azimuths_[i+1];
-
-          // std::cout << "min = " << min << std::endl;
-          // std::cout << "max = " << max << std::endl;
-
           for (size_t azim_i = min; azim_i < max; azim_i++)
           {
             azim_idx_arr.push_back(azim_i);
           }
         }
-        std::cout << "azim_idx_arr.size() = " << azim_idx_arr.size() << std::endl;
-        for (size_t i = 0; i < azim_idx_arr.size(); i++)
-        {
-          std::cout << azim_idx_arr[i] << " ";
-        }
-        std::cout << "\n";
-
-        std::cout << "channels\n";
         for (size_t i = 0; i < used_channels_.size(); i += 2)
         {
           min = used_channels_[i];
           max = used_channels_[i+1];
-
-          // std::cout << "min = " << min << std::endl;
-          // std::cout << "max = " << max << std::endl;
-
           for (size_t chan_i = min; chan_i < max; chan_i++)
           {
             chan_idx_arr.push_back(chan_i);
           }
         }
-        std::cout << "chan_idx_arr.size() = " << chan_idx_arr.size() << std::endl;
-        for (size_t i = 0; i < chan_idx_arr.size(); i++)
-        {
-          std::cout << chan_idx_arr[i] << " ";
-        }
-        std::cout << "\n";
 
-        ////////////////////////////////////////////////
-        // std::cout << "=====\n";
-        // std::cout << "chan_idx azim_idx\n";
         for (size_t i = 0; i < chan_idx_arr.size(); i++)
         {
           for (size_t j = 0; j < azim_idx_arr.size(); j++)
           {
             size_t chan_idx = chan_idx_arr[i];
             size_t azim_idx = azim_idx_arr[j];
-            // std::cout << chan_idx << " " << azim_idx << "\n";
             is_used_point_[chan_idx][azim_idx] = true;
           }
-          // std::cout << "\n";
         }
-        std::cout << "=====\n";
 
-        // std::cout << "is_used_point_[i] values : " << std::endl;
-        // for (size_t i = 0; i < is_used_point_.size(); i++)
-        // {
-        //   std::cout << "i = " << i << std::endl;
-        //   for (size_t j = 0; j < is_used_point_[i].size(); j++)
-        //   {
-        //     std::cout << is_used_point_[i][j] << " ";
-        //   }
-        //   std::cout << "\n";
-        // }
-        // std::cout << "---\n";
+        azim_idx_arr.clear();
+        chan_idx_arr.clear();
       }
 
       void OusterI64::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud)
       {
-        std::cout << "is_used_point_.size() = " << is_used_point_.size() << std::endl;
-        std::cout << "is_used_point_[i].size() : " << std::endl;
-        for (size_t i = 0; i < is_used_point_.size(); i++)
-        {
-          std::cout << is_used_point_[i].size() << " ";
-          if (i % 10 == 0)
-            std::cout << "\n";
-        }
-        std::cout << "---\n";
-
-        // bool first = true;
         os1_64_packet::Packet *pkt_ptr = (os1_64_packet::Packet *)(&pkt_msg_buf[0]);
 
         for (uint32_t blk_idx = 0; blk_idx < BLOCKS_PER_PACKET; blk_idx++)
@@ -255,15 +151,8 @@ namespace ichthus_lidar_driver_ros2
 
           for (uint32_t chan_idx = 0; chan_idx < NUM_LIDAR_CHANNELS; chan_idx++)
           {
-            // if (chan_idx % 2 == 0) // 짝수번째 채널 버림
-            //   continue;
-            std::cout << "chan_idx azimuth_idx skip\n";
-            if (!is_used_point_[chan_idx][azimuth_idx])
-            {
-              std::cout << chan_idx << " " << azimuth_idx << std::endl;
+            if (is_used_point_[chan_idx][azimuth_idx] == 0)
               continue;
-            }
-            std::cout << "\n";
 
             os1_64_packet::Data data = pkt_ptr->blocks[blk_idx].data[chan_idx];
 
