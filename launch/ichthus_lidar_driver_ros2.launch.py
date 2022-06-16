@@ -21,8 +21,6 @@ import ament_index_python
 
 import yaml
 
-### TODO: timestamp 동기화 명령어 수행
-### TODO: 설정된 params 상태 출력
 
 def launch_setup(context, *args, **kwargs):
   frontend_front_param_path = LaunchConfiguration("frontend_front_param_path").perform(context)
@@ -52,7 +50,7 @@ def launch_setup(context, *args, **kwargs):
   setup_type = LaunchConfiguration("setup_type").perform(context)
   composable_node_list = []
   if setup_type == "CENTER":
-    print("CENTER")
+    # print("CENTER")
     composable_node_list = [
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
@@ -76,7 +74,7 @@ def launch_setup(context, *args, **kwargs):
       )
     ]
   elif setup_type == "FRONT-REAR":
-    print("FRONT-REAR")
+    # print("FRONT-REAR")
     composable_node_list = [
       ComposableNode(
         package='ichthus_lidar_driver_ros2',

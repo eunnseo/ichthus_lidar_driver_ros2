@@ -34,7 +34,6 @@ namespace ichthus_lidar_driver_ros2
             azimuth_angles_deg_(azimuth_angles_deg), altitude_angles_deg_(altitude_angles_deg),
             used_channels_(used_channels), used_azimuths_(used_azimuths), used_range_(used_range)
       {
-        std::cout << "LiDARInterface construction\n";
         lidar_to_sensor_transform_ = Matrix4d::Identity();
         for (uint32_t col = 0; col < lidar_to_sensor_transform_.cols(); col++)
         {

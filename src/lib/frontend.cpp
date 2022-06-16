@@ -17,7 +17,7 @@ namespace ichthus_lidar_driver_ros2
 
       if (model_ == "OS1-64")
       {
-        std::cout << "model: " << model_ << std::endl;
+        // std::cout << "model: " << model_ << std::endl;
         lidar_ptr_.reset(new sensor::os1_64::OusterI64(lidar_origin_to_beam_origin_mm_,
                                                        lidar_to_sensor_transform_,
                                                        beam_azimuth_angles_,

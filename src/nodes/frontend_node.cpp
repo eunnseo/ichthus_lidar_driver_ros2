@@ -11,7 +11,7 @@ namespace ichthus_lidar_driver_ros2
         : Node("frontend", node_options), MAX_BUFFER_SIZE(100000)
         // : Node("frontend", rclcpp::NodeOptions().use_intra_process_comms(true)), MAX_BUFFER_SIZE(100000)
     {
-      std::cout << "\tFrontend contruction " << this->get_name() << std::endl;
+      std::cout << "Frontend construction " << this->get_name() << std::endl;
 
       param_.pcap_file = declare_parameter("pcap_file", "");
       param_.use_pcap = (param_.pcap_file != "");
@@ -35,17 +35,21 @@ namespace ichthus_lidar_driver_ros2
       param_.used_range = declare_parameter("used_range", std::vector<int64_t>());
       /*******************************/
 
-      // for (size_t i = 0; i < param_.used_channels.size(); i++)
-      // {
-      //   std::cout << param_.used_channels[i] << " ";
-      // }
-      // std::cout << "\n";
-      // for (size_t j = 0; j < param_.used_azimuths.size(); j++)
-      // {
-      //   std::cout << param_.used_azimuths[j] << " ";
-      // }
-      // std::cout << "\n";
-      
+      if (param_.use_pcap)
+      {
+        std::cout << "[frontend param] pcap_file: " << param_.pcap_file << std::endl;
+        std::cout << "[frontend param] pcap_wait_factor: " << param_.pcap_wait_factor << std::endl;
+      }
+      std::cout << "[frontend param] model: " << param_.model << std::endl;
+      std::cout << "[frontend param] ns: " << param_.ns << std::endl;
+      std::cout << "[frontend param] frame_id: " << param_.frame_id << std::endl;
+      std::cout << "[frontend param] ip_addr: " << param_.ip_addr << std::endl;
+      std::cout << "[frontend param] lidar_port: " << param_.lidar_port << std::endl;
+      std::cout << "[frontend param] used_channels_num: " << param_.used_channels.size() / 2 << std::endl;
+#ifdef USE_TIMER
+      std::cout << "[frontend param] period_ms: " << param_.period_ms << std::endl;
+#endif
+
       if (!param_.use_pcap)
       {
         frontend_.setLiDARModel(param_.model);
@@ -87,7 +91,7 @@ namespace ichthus_lidar_driver_ros2
 
     int FrontendNode::packetLoopThread()
     {
-      std::cout << "packetLoopThread.." << std::endl;
+      // std::cout << "packetLoopThread.." << std::endl;
       int retval;
       long nbytes = -1;
       std::vector<uint8_t> buf(MAX_BUFFER_SIZE + 1); // -> 포인터
