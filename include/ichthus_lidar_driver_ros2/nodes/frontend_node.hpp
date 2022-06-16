@@ -52,6 +52,7 @@ namespace ichthus_lidar_driver_ros2
 
         std::vector<int64_t> used_channels;
         std::vector<int64_t> used_azimuths;
+        std::vector<int64_t> used_range;
 
         Param()
             : use_pcap(false), pcap_file(""), pcap_wait_factor(0.6), lidar_port(7502), imu_port(7503), lidar_origin_to_beam_origin_mm(0.0), period_ms(100)

@@ -28,10 +28,11 @@ namespace ichthus_lidar_driver_ros2
                      const std::vector<double> &azimuth_angles_deg,
                      const std::vector<double> &altitude_angles_deg,
                      const std::vector<int64_t> &used_channels,
-                     const std::vector<int64_t> &used_azimuths)
+                     const std::vector<int64_t> &used_azimuths,
+                     const std::vector<int64_t> &used_range)
           : lidar_origin_to_beam_origin_mm_(lidar_origin_to_beam_origin_mm),
             azimuth_angles_deg_(azimuth_angles_deg), altitude_angles_deg_(altitude_angles_deg),
-            used_channels_(used_channels), used_azimuths_(used_azimuths)
+            used_channels_(used_channels), used_azimuths_(used_azimuths), used_range_(used_range)
       {
         std::cout << "LiDARInterface construction\n";
         lidar_to_sensor_transform_ = Matrix4d::Identity();
@@ -60,6 +61,7 @@ namespace ichthus_lidar_driver_ros2
 
       std::vector<int64_t> used_channels_;
       std::vector<int64_t> used_azimuths_;
+      std::vector<int64_t> used_range_;
       std::vector<std::vector<bool>> is_used_point_;
 
       size_t num_azimuth_;  // the number of measurements per scan (e.g. 512, 1024, 2048)

@@ -22,7 +22,8 @@ namespace ichthus_lidar_driver_ros2
                   const std::vector<double> &azimuth_angles_deg,
                   const std::vector<double> &altitude_angles_deg,
                   const std::vector<int64_t> &used_channels_,
-                  const std::vector<int64_t> &used_azimuths_);
+                  const std::vector<int64_t> &used_azimuths_,
+                  const std::vector<int64_t> &used_range_);
 
         void initLookUpTable();
 

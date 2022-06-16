@@ -23,7 +23,8 @@ namespace ichthus_lidar_driver_ros2
                                                        beam_azimuth_angles_,
                                                        beam_altitude_angles_,
                                                        used_channels_,
-                                                       used_azimuths_));
+                                                       used_azimuths_,
+                                                       used_range_));
       }
       else if (model_ == "VLP-16")
       {
