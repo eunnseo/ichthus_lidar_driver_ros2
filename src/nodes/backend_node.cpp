@@ -70,17 +70,15 @@ namespace ichthus_lidar_driver_ros2
       sub_can_odom_ = this->create_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
           "/can_odom",
           rclcpp::SensorDataQoS{}.keep_last(1280),
-          std::bind(&BackendNode::callbackOdomCan, this, std::placeholders::_1));
+          std::bind(&BackendNode::callbackCanOdom, this, std::placeholders::_1));
     }
 
     BackendNode::~BackendNode()
     {
     }
 
-    void BackendNode::callbackOdomCan(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)
+    void BackendNode::callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)
     {
-      std::cout << "Received can_odom data" << std::endl;
-
       sensor::Velocity vel{};
       vel.header.stamp = msg->header.stamp;
       vel.linear_x = msg->twist.twist.linear.x;

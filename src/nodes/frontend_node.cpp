@@ -32,7 +32,7 @@ namespace ichthus_lidar_driver_ros2
       param_.lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
       param_.used_channels = declare_parameter("used_channels", std::vector<int64_t>());
       param_.used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
-      param_.used_range = declare_parameter("used_range", std::vector<int64_t>());
+      param_.used_range = declare_parameter("used_range", std::vector<double>());
       /*******************************/
 
       if (param_.use_pcap)

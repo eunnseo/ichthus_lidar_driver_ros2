@@ -13,7 +13,7 @@ namespace ichthus_lidar_driver_ros2
                            const std::vector<double> &altitude_angles_deg,
                            const std::vector<int64_t> &used_channels,
                            const std::vector<int64_t> &used_azimuths,
-                           const std::vector<int64_t> &used_range)
+                           const std::vector<double> &used_range)
           : LiDARInterface(lidar_origin_to_beam_origin_mm, transform, azimuth_angles_deg, altitude_angles_deg, used_channels, used_azimuths, used_range)
       {
       }
@@ -62,8 +62,8 @@ namespace ichthus_lidar_driver_ros2
         lut_.offset.matrix() += trans.replicate(num_azimuth_ * num_channels_, 1);
 
         // apply scaling factor
-        lut_.direction *= os1_64_packet::range_unit;
-        lut_.offset *= os1_64_packet::range_unit;
+        lut_.direction *= MM_TO_M;
+        lut_.offset *= MM_TO_M;
 
         // std::cout << "lut_.direction.size(): " << lut_.direction.size() << std::endl;
         // std::cout << "lut_.offset.size(): " << lut_.offset.size() << std::endl;
@@ -136,8 +136,8 @@ namespace ichthus_lidar_driver_ros2
 
       void OusterI64::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud)
       {
-        int64_t range_min = used_range_[0];
-        int64_t range_max = used_range_[1];
+        double range_min = used_range_[0] * M_TO_MM;
+        double range_max = used_range_[1] * M_TO_MM;
 
         os1_64_packet::Packet *pkt_ptr = (os1_64_packet::Packet *)(&pkt_msg_buf[0]);
 
@@ -160,7 +160,7 @@ namespace ichthus_lidar_driver_ros2
 
             os1_64_packet::Data data = pkt_ptr->blocks[blk_idx].data[chan_idx];
 
-            uint32_t range = data.range_mm & 0x000fffff;
+            double range = static_cast<double>(data.range_mm & 0x000fffff);
             if (range < range_min || range > range_max)
               continue;
 

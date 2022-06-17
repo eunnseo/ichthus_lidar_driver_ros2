@@ -9,7 +9,8 @@ namespace ichthus_lidar_driver_ros2
   {
     namespace os1_64_packet
     {
-      constexpr double range_unit = 0.001; // mm -> m
+#define MM_TO_M 0.001
+#define M_TO_MM 1000
 
 #define NUM_LIDAR_CHANNELS 64
 #define BLOCKS_PER_PACKET 16

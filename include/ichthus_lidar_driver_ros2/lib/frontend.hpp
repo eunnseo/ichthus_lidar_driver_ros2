@@ -69,7 +69,7 @@ namespace ichthus_lidar_driver_ros2
       {
         used_azimuths_ = used_azimuths;
       }
-      inline void setUsedRange(const std::vector<int64_t> &used_range)
+      inline void setUsedRange(const std::vector<double> &used_range)
       {
         used_range_ = used_range;
       }
@@ -100,7 +100,7 @@ namespace ichthus_lidar_driver_ros2
 
       std::vector<int64_t> used_channels_;
       std::vector<int64_t> used_azimuths_;
-      std::vector<int64_t> used_range_;
+      std::vector<double> used_range_;
 
       std::shared_ptr<sensor::LiDARInterface> lidar_ptr_;
 
