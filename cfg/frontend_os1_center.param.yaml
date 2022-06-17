@@ -76,8 +76,8 @@
 
     used_azimuths: ### range: 0~1023
       #START, END
-      [5,     1019]
+      [0,     1024]
 
-    used_range: ### mm단위
+    used_range: ### in meter
       #START, END
-      [300,   12000]
+      [0.3,   120]
