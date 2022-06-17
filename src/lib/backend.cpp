@@ -42,7 +42,7 @@ namespace ichthus_lidar_driver_ros2
       // pcl::transformPointCloud(in_cloud, *tf_cloud_ptr, transform_);
 
       // TODO: Merge deblurringPointCloud and transformPointCloud
-      deblurringPointCloud(in_cloud);
+      bool is_deblurred = deblurringPointCloud(in_cloud);
 
       pcl::PointCloud<PointT> tf_cloud;
       pcl::transformPointCloud(in_cloud, tf_cloud, transform_);
@@ -53,9 +53,17 @@ namespace ichthus_lidar_driver_ros2
 
     void InputCloud::popCloud(pcl::PointCloud<PointT> &out_cloud)
     {
-      if (tf_cloud_.size() == 0)
+      if (tf_cloud_.empty())
       {
         return;
+      }
+      else if (velocity_queue_.empty())
+      {
+        std::cerr << "Velocity Queue is empty." << std::endl;
+      }
+      else
+      {
+        /* do nothing */
       }
       // if (tf_cloud_.size() > 0)
       // {
@@ -94,7 +102,7 @@ namespace ichthus_lidar_driver_ros2
     {
       if (cloud.empty() || velocity_queue_.empty())
       {
-        std::cerr << "cloud or velocity_queue_ is empty." << std::endl;
+        // std::cerr << "cloud or velocity_queue_ is empty." << std::endl;
         return false;
       }
 

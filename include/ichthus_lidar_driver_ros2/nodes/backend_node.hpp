@@ -58,7 +58,7 @@ namespace ichthus_lidar_driver_ros2
       std::vector<std::shared_ptr<backend::InputCloud>> in_cloud_arr_;
 
       void callbackLiDARCloud(const sensor_msgs::msg::PointCloud2::UniquePtr msg, const int cld_idx);
-      void callbackOdomCan(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg);
+      void callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg);
       void callbackTimer();
 
     }; // class BackendNode
