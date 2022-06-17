@@ -1,5 +1,6 @@
 #include <ichthus_lidar_driver_ros2/sensor/os1_64/os1_64.hpp>
 
+
 namespace ichthus_lidar_driver_ros2
 {
   namespace sensor
@@ -9,8 +10,11 @@ namespace ichthus_lidar_driver_ros2
       OusterI64::OusterI64(double lidar_origin_to_beam_origin_mm,
                            const std::vector<double> &transform,
                            const std::vector<double> &azimuth_angles_deg,
-                           const std::vector<double> &altitude_angles_deg)
-          : LiDARInterface(lidar_origin_to_beam_origin_mm, transform, azimuth_angles_deg, altitude_angles_deg)
+                           const std::vector<double> &altitude_angles_deg,
+                           const std::vector<int64_t> &used_channels,
+                           const std::vector<int64_t> &used_azimuths,
+                           const std::vector<int64_t> &used_range)
+          : LiDARInterface(lidar_origin_to_beam_origin_mm, transform, azimuth_angles_deg, altitude_angles_deg, used_channels, used_azimuths, used_range)
       {
       }
 
@@ -79,9 +83,62 @@ namespace ichthus_lidar_driver_ros2
         num_channels_ = 64;
       }
 
+      void OusterI64::initUsedPoints()
+      {
+        // std::cout << "initUsedPoints..\n";
+        // std::cout << "used_azimuths_.size() = " << used_azimuths_.size() << std::endl;
+        // std::cout << "used_channels_.size() = " << used_channels_.size() << std::endl;
+
+        for (size_t i = 0; i < num_channels_; i++)
+        {
+          is_used_point_.push_back(std::vector<bool>());
+          for (size_t j = 0; j < num_azimuth_; j++)
+          {
+            is_used_point_[i].push_back(false);
+          }
+        }
+
+        size_t min, max;
+        std::vector<int64_t> azim_idx_arr;
+        std::vector<int64_t> chan_idx_arr;
+        for (size_t i = 0; i < used_azimuths_.size(); i += 2)
+        {
+          min = used_azimuths_[i];
+          max = used_azimuths_[i+1];
+          for (size_t azim_i = min; azim_i < max; azim_i++)
+          {
+            azim_idx_arr.push_back(azim_i);
+          }
+        }
+        for (size_t i = 0; i < used_channels_.size(); i += 2)
+        {
+          min = used_channels_[i];
+          max = used_channels_[i+1];
+          for (size_t chan_i = min; chan_i < max; chan_i++)
+          {
+            chan_idx_arr.push_back(chan_i);
+          }
+        }
+
+        for (size_t i = 0; i < chan_idx_arr.size(); i++)
+        {
+          for (size_t j = 0; j < azim_idx_arr.size(); j++)
+          {
+            size_t chan_idx = chan_idx_arr[i];
+            size_t azim_idx = azim_idx_arr[j];
+            is_used_point_[chan_idx][azim_idx] = true;
+          }
+        }
+
+        azim_idx_arr.clear();
+        chan_idx_arr.clear();
+      }
+
       void OusterI64::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud)
       {
-        // bool first = true;
+        int64_t range_min = used_range_[0];
+        int64_t range_max = used_range_[1];
+
         os1_64_packet::Packet *pkt_ptr = (os1_64_packet::Packet *)(&pkt_msg_buf[0]);
 
         for (uint32_t blk_idx = 0; blk_idx < BLOCKS_PER_PACKET; blk_idx++)
@@ -98,13 +155,13 @@ namespace ichthus_lidar_driver_ros2
 
           for (uint32_t chan_idx = 0; chan_idx < NUM_LIDAR_CHANNELS; chan_idx++)
           {
-            // if (chan_idx % 2 == 0) // 짝수번째 채널 버림
-            //   continue;
+            if (is_used_point_[chan_idx][azimuth_idx] == 0)
+              continue;
 
             os1_64_packet::Data data = pkt_ptr->blocks[blk_idx].data[chan_idx];
 
             uint32_t range = data.range_mm & 0x000fffff;
-            if (range < 300)
+            if (range < range_min || range > range_max)
               continue;
 
             PointT point;

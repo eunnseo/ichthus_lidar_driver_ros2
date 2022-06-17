@@ -11,7 +11,7 @@ namespace ichthus_lidar_driver_ros2
         : Node("frontend", node_options), MAX_BUFFER_SIZE(100000)
         // : Node("frontend", rclcpp::NodeOptions().use_intra_process_comms(true)), MAX_BUFFER_SIZE(100000)
     {
-      std::cout << "\tFrontend contruction " << this->get_name() << std::endl;
+      std::cout << "Frontend construction " << this->get_name() << std::endl;
 
       param_.pcap_file = declare_parameter("pcap_file", "");
       param_.use_pcap = (param_.pcap_file != "");
@@ -30,8 +30,26 @@ namespace ichthus_lidar_driver_ros2
       param_.beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
       param_.lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
       param_.lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
+      param_.used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      param_.used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
+      param_.used_range = declare_parameter("used_range", std::vector<int64_t>());
       /*******************************/
-      
+
+      if (param_.use_pcap)
+      {
+        std::cout << "[frontend param] pcap_file: " << param_.pcap_file << std::endl;
+        std::cout << "[frontend param] pcap_wait_factor: " << param_.pcap_wait_factor << std::endl;
+      }
+      std::cout << "[frontend param] model: " << param_.model << std::endl;
+      std::cout << "[frontend param] ns: " << param_.ns << std::endl;
+      std::cout << "[frontend param] frame_id: " << param_.frame_id << std::endl;
+      std::cout << "[frontend param] ip_addr: " << param_.ip_addr << std::endl;
+      std::cout << "[frontend param] lidar_port: " << param_.lidar_port << std::endl;
+      std::cout << "[frontend param] used_channels_num: " << param_.used_channels.size() / 2 << std::endl;
+#ifdef USE_TIMER
+      std::cout << "[frontend param] period_ms: " << param_.period_ms << std::endl;
+#endif
+
       if (!param_.use_pcap)
       {
         frontend_.setLiDARModel(param_.model);
@@ -39,10 +57,15 @@ namespace ichthus_lidar_driver_ros2
         frontend_.setLiDARPort(param_.lidar_port);
         frontend_.setIMUPort(param_.imu_port);
 
+        // TODO: 파라미터 값을 frontend_node에 저장할 필요 없이, 바로 frontend에게 넘겨주면 됨
         frontend_.setBeamAzimuthAngles(param_.beam_azimuth_angles);
         frontend_.setBeamAltitudeAngles(param_.beam_altitude_angles);
         frontend_.setToSensorTransform(param_.lidar_to_sensor_transform);
         frontend_.setToBeamOrigin(param_.lidar_origin_to_beam_origin_mm);
+
+        frontend_.setUsedChannels(param_.used_channels);
+        frontend_.setUsedAzimuths(param_.used_azimuths);
+        frontend_.setUsedRange(param_.used_range);
 
         frontend_.init();
       }
@@ -68,7 +91,7 @@ namespace ichthus_lidar_driver_ros2
 
     int FrontendNode::packetLoopThread()
     {
-      std::cout << "packetLoopThread.." << std::endl;
+      // std::cout << "packetLoopThread.." << std::endl;
       int retval;
       long nbytes = -1;
       std::vector<uint8_t> buf(MAX_BUFFER_SIZE + 1); // -> 포인터

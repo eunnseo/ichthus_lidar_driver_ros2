@@ -9,8 +9,6 @@ namespace ichthus_lidar_driver_ros2
     /*************************************************************************/
     InputCloud::InputCloud(const std::string ns, const backend::Pose &pose)
     {
-      std::cout << "InputCloud constructor: " << ns << std::endl;
-
       ns_ = ns;
       pose_ = pose;
       initLiDARTF(pose_);
@@ -27,7 +25,7 @@ namespace ichthus_lidar_driver_ros2
 
       transform_ = (tl * rot_z * rot_y * rot_x).matrix();
 
-      std::cout << "Transform matrix: " << std::endl;
+      std::cout << "[backend] Transform matrix: " << std::endl;
       std::cout << transform_ << std::endl;
 
       tf2::Quaternion quat{};

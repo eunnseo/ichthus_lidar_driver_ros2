@@ -17,11 +17,14 @@ namespace ichthus_lidar_driver_ros2
 
       if (model_ == "OS1-64")
       {
-        std::cout << "model: " << model_ << std::endl;
+        // std::cout << "model: " << model_ << std::endl;
         lidar_ptr_.reset(new sensor::os1_64::OusterI64(lidar_origin_to_beam_origin_mm_,
                                                        lidar_to_sensor_transform_,
                                                        beam_azimuth_angles_,
-                                                       beam_altitude_angles_));
+                                                       beam_altitude_angles_,
+                                                       used_channels_,
+                                                       used_azimuths_,
+                                                       used_range_));
       }
       else if (model_ == "VLP-16")
       {
@@ -35,6 +38,7 @@ namespace ichthus_lidar_driver_ros2
 
       lidar_ptr_->initResolution();
       lidar_ptr_->initLookUpTable();
+      lidar_ptr_->initUsedPoints();
     }
 
     net::PacketState Frontend::poll()

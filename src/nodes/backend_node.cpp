@@ -11,16 +11,23 @@ namespace ichthus_lidar_driver_ros2
         : Node("backend", node_options)
     // : Node("backend", rclcpp::NodeOptions().use_intra_process_comms(true))
     {
-      std::cout << "\tBackend contruction " << this->get_name() << std::endl;
+      std::cout << "Backend construction " << this->get_name() << std::endl;
 
       param_.ns = declare_parameter("ns", std::vector<std::string>());
       param_.frame_id = declare_parameter("out_cloud.frame_id", "");
       param_.period_ms = declare_parameter("out_cloud.period_ms", 100);
 
+      std::cout << "[backend param] ns: ";
+      for (size_t i = 0; i < param_.ns.size(); i++)
+        std::cout << param_.ns[i] << ", ";
+      std::cout << "\n";
+      std::cout << "[backend param] frame_id: " << param_.frame_id << std::endl;
+      std::cout << "[backend param] period_ms: " << param_.period_ms << std::endl;
+
       sub_lidar_cloud_.resize(param_.ns.size());
       for (uint32_t ns_i = 0; ns_i < param_.ns.size(); ns_i++)
       {
-        std::cout << "ns = " << param_.ns[ns_i] << std::endl;
+        // std::cout << "ns = " << param_.ns[ns_i] << std::endl;
         std::string key("in_clouds." + param_.ns[ns_i]);
         std::string topic_name("/" + param_.ns[ns_i] + "/lidar_cloud");
 
@@ -43,13 +50,7 @@ namespace ichthus_lidar_driver_ros2
             // 1280,
             [this, ns_i](const sensor_msgs::msg::PointCloud2::UniquePtr msg)
             {
-              // printf(
-              //   " Received message with value: %u, and address: 0x%" PRIXPTR "\n", msg->header.stamp.nanosec,
-              //   reinterpret_cast<std::uintptr_t>(msg.get()));
-
               // this->callbackLiDARCloud(msg, ns_i);
-
-              // deblurringPointCloud(in_cloud_arr_[ns_i]->tf2_base_link_to_sensor, *msg);
 
               // TODO: Do not use lambda function
               pcl::PointCloud<PointT> in_cloud;
