@@ -35,20 +35,17 @@ namespace ichthus_lidar_driver_ros2
       param_.used_range = declare_parameter("used_range", std::vector<double>());
       /*******************************/
 
-      if (param_.use_pcap)
-      {
-        std::cout << "[frontend param] pcap_file: " << param_.pcap_file << std::endl;
-        std::cout << "[frontend param] pcap_wait_factor: " << param_.pcap_wait_factor << std::endl;
-      }
-      std::cout << "[frontend param] model: " << param_.model << std::endl;
-      std::cout << "[frontend param] ns: " << param_.ns << std::endl;
-      std::cout << "[frontend param] frame_id: " << param_.frame_id << std::endl;
-      std::cout << "[frontend param] ip_addr: " << param_.ip_addr << std::endl;
-      std::cout << "[frontend param] lidar_port: " << param_.lidar_port << std::endl;
-      std::cout << "[frontend param] used_channels_num: " << param_.used_channels.size() / 2 << std::endl;
-#ifdef USE_TIMER
-      std::cout << "[frontend param] period_ms: " << param_.period_ms << std::endl;
-#endif
+      /* lidar calibration parameters */
+      // std::vector<double> beam_azimuth_angles = declare_parameter("beam_azimuth_angles", std::vector<double>());
+      // std::vector<double> beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
+      // std::vector<double> lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
+      // double lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
+      // std::vector<int64_t> used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      // std::vector<int64_t> used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
+      // std::vector<double> used_range = declare_parameter("used_range", std::vector<double>());
+      /*******************************/
+
+      printFrontendParams();
 
       if (!param_.use_pcap)
       {
@@ -66,6 +63,15 @@ namespace ichthus_lidar_driver_ros2
         frontend_.setUsedChannels(param_.used_channels);
         frontend_.setUsedAzimuths(param_.used_azimuths);
         frontend_.setUsedRange(param_.used_range);
+
+        // frontend_.setBeamAzimuthAngles(beam_azimuth_angles);
+        // frontend_.setBeamAltitudeAngles(beam_altitude_angles);
+        // frontend_.setToSensorTransform(lidar_to_sensor_transform);
+        // frontend_.setToBeamOrigin(lidar_origin_to_beam_origin_mm);
+
+        // frontend_.setUsedChannels(used_channels);
+        // frontend_.setUsedAzimuths(used_azimuths);
+        // frontend_.setUsedRange(used_range);
 
         frontend_.init();
       }
@@ -87,6 +93,31 @@ namespace ichthus_lidar_driver_ros2
     FrontendNode::~FrontendNode()
     {
       poll_thread_.join();
+    }
+
+    void FrontendNode::printFrontendParams()
+    {
+      if (param_.use_pcap)
+      {
+        std::cout << "[frontend param] pcap_file: " << param_.pcap_file << std::endl;
+        std::cout << "[frontend param] pcap_wait_factor: " << param_.pcap_wait_factor << std::endl;
+      }
+      std::cout << "[frontend param] model: " << param_.model << std::endl;
+      std::cout << "[frontend param] ns: " << param_.ns << std::endl;
+      std::cout << "[frontend param] frame_id: " << param_.frame_id << std::endl;
+      std::cout << "[frontend param] ip_addr: " << param_.ip_addr << std::endl;
+      std::cout << "[frontend param] lidar_port: " << param_.lidar_port << std::endl;
+      // std::cout << "[frontend param] used_channels_num: " << param_.used_channels.size() / 2 << std::endl;
+      // std::cout << "[frontend param] used_range: "
+      // for (size_t i = 0; i < used_range.size(); i++)
+      // {
+      //   std::cout << used_range[i] << ", ";
+      // }
+      // std::cout << "\n";
+
+#ifdef USE_TIMER
+      std::cout << "[frontend param] period_ms: " << param_.period_ms << std::endl;
+#endif
     }
 
     int FrontendNode::packetLoopThread()
