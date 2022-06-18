@@ -17,12 +17,7 @@ namespace ichthus_lidar_driver_ros2
       param_.frame_id = declare_parameter("out_cloud.frame_id", "");
       param_.period_ms = declare_parameter("out_cloud.period_ms", 100);
 
-      std::cout << "[backend param] ns: ";
-      for (size_t i = 0; i < param_.ns.size(); i++)
-        std::cout << param_.ns[i] << ", ";
-      std::cout << "\n";
-      std::cout << "[backend param] frame_id: " << param_.frame_id << std::endl;
-      std::cout << "[backend param] period_ms: " << param_.period_ms << std::endl;
+      printBackendParams();
 
       sub_lidar_cloud_.resize(param_.ns.size());
       for (uint32_t ns_i = 0; ns_i < param_.ns.size(); ns_i++)
@@ -68,12 +63,22 @@ namespace ichthus_lidar_driver_ros2
 
       sub_can_odom_ = this->create_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
           "/can_odom",
-          rclcpp::SensorDataQoS{}.keep_last(1280),
+          rclcpp::SensorDataQoS{}.keep_last(20),
           std::bind(&BackendNode::callbackCanOdom, this, std::placeholders::_1));
     }
 
     BackendNode::~BackendNode()
     {
+    }
+
+    void BackendNode::printBackendParams()
+    {
+      std::cout << "[backend param] ns: ";
+      for (size_t i = 0; i < param_.ns.size(); i++)
+        std::cout << param_.ns[i] << ", ";
+      std::cout << "\n";
+      std::cout << "[backend param] frame_id: " << param_.frame_id << std::endl;
+      std::cout << "[backend param] period_ms: " << param_.period_ms << std::endl;
     }
 
     void BackendNode::callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)
@@ -123,7 +128,8 @@ namespace ichthus_lidar_driver_ros2
       pcl::toROSMsg(out_cloud, *out_msg);
       out_msg->header.frame_id = param_.frame_id;
 
-      pub_merged_cloud_->publish(std::move(out_msg));
+      // pub_merged_cloud_->publish(std::move(out_msg));
+      pub_merged_cloud_->publish(*out_msg);
     }
 
   }

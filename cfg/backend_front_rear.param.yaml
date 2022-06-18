@@ -1,18 +1,10 @@
 /**:
   ros__parameters:
 
-    # ns: [ "front", "rear" ]
-    ns: [ "center" ]
+    ns: [ "front", "rear" ]
 
     ### input topic info, (yaw,pitch,roll in degree/ x,y,z in meter)
     in_clouds:
-      center:
-        pose_yaw: 0.0
-        pose_pitch: 0.0
-        pose_roll: 0.0
-        pose_x: 0.787
-        pose_y: 0.0
-        pose_z: 1.733 # lowest: 1.733 (0.09)
       # front: # vertical
       #   pose_yaw: 0.0
       #   pose_pitch: 0.0

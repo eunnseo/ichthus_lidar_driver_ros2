@@ -23,6 +23,8 @@ namespace ichthus_lidar_driver_ros2
       explicit FrontendNode(const rclcpp::NodeOptions &node_options);
       ~FrontendNode();
 
+      void printFrontendParams();
+
       int packetLoopThread();
 
     private:
