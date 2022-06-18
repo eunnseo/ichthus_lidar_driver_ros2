@@ -42,7 +42,7 @@ namespace ichthus_lidar_driver_ros2
       // pcl::transformPointCloud(in_cloud, *tf_cloud_ptr, transform_);
 
       // TODO: Merge deblurringPointCloud and transformPointCloud
-      bool is_deblurred = deblurringPointCloud(in_cloud);
+      deblurringPointCloud(in_cloud);
 
       pcl::PointCloud<PointT> tf_cloud;
       pcl::transformPointCloud(in_cloud, tf_cloud, transform_);
@@ -94,6 +94,10 @@ namespace ichthus_lidar_driver_ros2
         {
           velocity_queue_.pop_front();
         }
+        else
+        {
+          /* do nothing */
+        }
         break;
       }
     }
@@ -138,9 +142,10 @@ namespace ichthus_lidar_driver_ros2
         float v_y{static_cast<float>(velocity_it->linear_y)};
         float w{static_cast<float>(velocity_it->angular_z)};
 
-        if (std::abs(point_it->timestamp - rclcpp::Time(velocity_it->header.stamp).seconds()) > 0.1)
+        double time_diff = std::abs(point_it->timestamp - rclcpp::Time(velocity_it->header.stamp).seconds());
+        if (time_diff > 0.1)
         {
-          std::cout << "velocity time_stamp is too late. Cloud not interpolate." << std::endl;
+          std::cout << "Velocity time_stamp is too late. (" <<  time_diff << ") " << "Cloud not interpolate." << std::endl;
           v_x = 0.0f;
           v_y = 0.0f;
           w = 0.0f;

@@ -27,7 +27,6 @@ namespace ichthus_lidar_driver_ros2
       sub_lidar_cloud_.resize(param_.ns.size());
       for (uint32_t ns_i = 0; ns_i < param_.ns.size(); ns_i++)
       {
-        // std::cout << "ns = " << param_.ns[ns_i] << std::endl;
         std::string key("in_clouds." + param_.ns[ns_i]);
         std::string topic_name("/" + param_.ns[ns_i] + "/lidar_cloud");
 
