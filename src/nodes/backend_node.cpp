@@ -68,7 +68,7 @@ namespace ichthus_lidar_driver_ros2
 
       sub_can_odom_ = this->create_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
           "/can_odom",
-          rclcpp::SensorDataQoS{}.keep_last(1280),
+          rclcpp::SensorDataQoS{}.keep_last(20),
           std::bind(&BackendNode::callbackCanOdom, this, std::placeholders::_1));
     }
 
@@ -123,7 +123,8 @@ namespace ichthus_lidar_driver_ros2
       pcl::toROSMsg(out_cloud, *out_msg);
       out_msg->header.frame_id = param_.frame_id;
 
-      pub_merged_cloud_->publish(std::move(out_msg));
+      // pub_merged_cloud_->publish(std::move(out_msg));
+      pub_merged_cloud_->publish(*out_msg);
     }
 
   }
