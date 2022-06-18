@@ -23,6 +23,11 @@ import yaml
 
 
 def launch_setup(context, *args, **kwargs):
+  # frontend
+  frontend_center_param_path = LaunchConfiguration("frontend_center_param_path").perform(context)
+  with open(frontend_center_param_path, "r") as f:
+    frontend_center_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+
   frontend_front_param_path = LaunchConfiguration("frontend_front_param_path").perform(context)
   with open(frontend_front_param_path, "r") as f:
     frontend_front_param = yaml.safe_load(f)["/**"]["ros__parameters"]
@@ -31,14 +36,28 @@ def launch_setup(context, *args, **kwargs):
   with open(frontend_rear_param_path, "r") as f:
     frontend_rear_param = yaml.safe_load(f)["/**"]["ros__parameters"]
 
-  frontend_center_param_path = LaunchConfiguration("frontend_center_param_path").perform(context)
-  with open(frontend_center_param_path, "r") as f:
-    frontend_center_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+  frontend_right_param_path = LaunchConfiguration("frontend_right_param_path").perform(context)
+  with open(frontend_right_param_path, "r") as f:
+    frontend_right_param = yaml.safe_load(f)["/**"]["ros__parameters"]
 
-  backend_param_path = LaunchConfiguration("backend_param_path").perform(context)
-  with open(backend_param_path, "r") as f:
-    backend_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+  frontend_left_param_path = LaunchConfiguration("frontend_left_param_path").perform(context)
+  with open(frontend_left_param_path, "r") as f:
+    frontend_left_param = yaml.safe_load(f)["/**"]["ros__parameters"]
 
+  # backend
+  backend_center_param_path = LaunchConfiguration("backend_center_param_path").perform(context)
+  with open(backend_center_param_path, "r") as f:
+    backend_center_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+
+  backend_front_rear_param_path = LaunchConfiguration("backend_front_rear_param_path").perform(context)
+  with open(backend_front_rear_param_path, "r") as f:
+    backend_front_rear_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+
+  backend_right_left_param_path = LaunchConfiguration("backend_right_left_param_path").perform(context)
+  with open(backend_right_left_param_path, "r") as f:
+    backend_right_left_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+
+  # calibration
   calibration_2_param_path = LaunchConfiguration("calibration_2_param_path").perform(context)
   with open(calibration_2_param_path, "r") as f:
     calibration_2_param = yaml.safe_load(f)["/**"]["ros__parameters"]
@@ -50,7 +69,7 @@ def launch_setup(context, *args, **kwargs):
   setup_type = LaunchConfiguration("setup_type").perform(context)
   composable_node_list = []
   if setup_type == "CENTER":
-    # print("CENTER")
+    print("setup type: CENTER")
     composable_node_list = [
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
@@ -65,8 +84,8 @@ def launch_setup(context, *args, **kwargs):
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
         plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
-        name='backend',
-        parameters=[backend_param, 
+        name='backend_center',
+        parameters=[backend_center_param, 
           {
             "use_sim_time": LaunchConfiguration("use_sim_time")
           }],
@@ -74,7 +93,7 @@ def launch_setup(context, *args, **kwargs):
       )
     ]
   elif setup_type == "FRONT-REAR":
-    # print("FRONT-REAR")
+    print("setup type: FRONT-REAR")
     composable_node_list = [
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
@@ -99,8 +118,8 @@ def launch_setup(context, *args, **kwargs):
       ComposableNode(
         package='ichthus_lidar_driver_ros2',
         plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
-        name='backend',
-        parameters=[backend_param,
+        name='backend_front_rear',
+        parameters=[backend_front_rear_param,
           {
             "use_sim_time": LaunchConfiguration("use_sim_time")
           }],
@@ -108,7 +127,39 @@ def launch_setup(context, *args, **kwargs):
       )
     ]
   elif setup_type == "RIGHT-LEFT":
-    print("RIGHT-LEFT")
+    print("setup type: RIGHT-LEFT")
+    composable_node_list = [
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::frontend_node::FrontendNode',
+        name='frontend_right',
+        parameters=[frontend_right_param, calibration_2_param,
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      ),
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::frontend_node::FrontendNode',
+        name='frontend_left',
+        parameters=[frontend_left_param, calibration_3_param,
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      ),
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
+        name='backend_right_left',
+        parameters=[backend_right_left_param,
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      )
+    ]
   else:
     print("do nothing")
 
@@ -149,13 +200,20 @@ def generate_launch_description():
       DeclareLaunchArgument(name, default_value=default_value, description=description)
     )
 
+  # parameter
+  add_launch_arg("frontend_center_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_center.param.yaml",], "", )
   add_launch_arg("frontend_front_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_front.param.yaml",], "", )
   add_launch_arg("frontend_rear_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_rear.param.yaml",], "", )
-  add_launch_arg("frontend_center_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_center.param.yaml",], "", )
-  add_launch_arg("backend_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/backend_default.param.yaml",], "", )
+  add_launch_arg("frontend_right_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_right.param.yaml",], "", )
+  add_launch_arg("frontend_left_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/frontend_os1_left.param.yaml",], "", )
+
+  add_launch_arg("backend_center_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/backend_center.param.yaml",], "", )
+  add_launch_arg("backend_front_rear_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/backend_front_rear.param.yaml",], "", )
+  add_launch_arg("backend_right_left_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/backend_right_left.param.yaml",], "", )
+  add_launch_arg("setup_type", "CENTER") # FRONT-REAR, RIGHT-LEFT, CENTER
+
   add_launch_arg("calibration_2_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/OSI64_2.yaml",], "", )
   add_launch_arg("calibration_3_param_path", [FindPackageShare("ichthus_lidar_driver_ros2"), "/cfg/OSI64_3.yaml",], "", )
-  add_launch_arg("setup_type", "CENTER") # FRONT-REAR, RIGHT-LEFT, CENTER
 
   # component
   add_launch_arg("use_intra_process", "true", "use ROS2 component container communication")
