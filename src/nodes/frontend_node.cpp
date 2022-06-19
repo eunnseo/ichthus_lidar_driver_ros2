@@ -26,23 +26,13 @@ namespace ichthus_lidar_driver_ros2
       param_.period_ms = declare_parameter("period_ms", 100);
 
       /* lidar calibration parameters */
-      param_.beam_azimuth_angles = declare_parameter("beam_azimuth_angles", std::vector<double>());
-      param_.beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
-      param_.lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
-      param_.lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
-      param_.used_channels = declare_parameter("used_channels", std::vector<int64_t>());
-      param_.used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
-      param_.used_range = declare_parameter("used_range", std::vector<double>());
-      /*******************************/
-
-      /* lidar calibration parameters */
-      // std::vector<double> beam_azimuth_angles = declare_parameter("beam_azimuth_angles", std::vector<double>());
-      // std::vector<double> beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
-      // std::vector<double> lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
-      // double lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
-      // std::vector<int64_t> used_channels = declare_parameter("used_channels", std::vector<int64_t>());
-      // std::vector<int64_t> used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
-      // std::vector<double> used_range = declare_parameter("used_range", std::vector<double>());
+      std::vector<double> beam_azimuth_angles = declare_parameter("beam_azimuth_angles", std::vector<double>());
+      std::vector<double> beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
+      std::vector<double> lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
+      double lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
+      std::vector<int64_t> used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      std::vector<int64_t> used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
+      std::vector<double> used_range = declare_parameter("used_range", std::vector<double>());
       /*******************************/
 
       printFrontendParams();
@@ -54,24 +44,14 @@ namespace ichthus_lidar_driver_ros2
         frontend_.setLiDARPort(param_.lidar_port);
         frontend_.setIMUPort(param_.imu_port);
 
-        // TODO: 파라미터 값을 frontend_node에 저장할 필요 없이, 바로 frontend에게 넘겨주면 됨
-        frontend_.setBeamAzimuthAngles(param_.beam_azimuth_angles);
-        frontend_.setBeamAltitudeAngles(param_.beam_altitude_angles);
-        frontend_.setToSensorTransform(param_.lidar_to_sensor_transform);
-        frontend_.setToBeamOrigin(param_.lidar_origin_to_beam_origin_mm);
+        frontend_.setBeamAzimuthAngles(beam_azimuth_angles);
+        frontend_.setBeamAltitudeAngles(beam_altitude_angles);
+        frontend_.setToSensorTransform(lidar_to_sensor_transform);
+        frontend_.setToBeamOrigin(lidar_origin_to_beam_origin_mm);
 
-        frontend_.setUsedChannels(param_.used_channels);
-        frontend_.setUsedAzimuths(param_.used_azimuths);
-        frontend_.setUsedRange(param_.used_range);
-
-        // frontend_.setBeamAzimuthAngles(beam_azimuth_angles);
-        // frontend_.setBeamAltitudeAngles(beam_altitude_angles);
-        // frontend_.setToSensorTransform(lidar_to_sensor_transform);
-        // frontend_.setToBeamOrigin(lidar_origin_to_beam_origin_mm);
-
-        // frontend_.setUsedChannels(used_channels);
-        // frontend_.setUsedAzimuths(used_azimuths);
-        // frontend_.setUsedRange(used_range);
+        frontend_.setUsedChannels(used_channels);
+        frontend_.setUsedAzimuths(used_azimuths);
+        frontend_.setUsedRange(used_range);
 
         frontend_.init();
       }
