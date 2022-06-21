@@ -72,7 +72,7 @@ namespace ichthus_lidar_driver_ros2
       // if (tf_cloud_.size() > 0)
       // {
       //   static int seq1 = 0;
-      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud_);
+      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2_theta/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud_);
       // }
 
       // deblurringPointCloud(tf_cloud_);
@@ -80,7 +80,7 @@ namespace ichthus_lidar_driver_ros2
       // if (tf_cloud_.size() > 0)
       // {
       //   static int seq2 = 0;
-      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2/deblurred/" + std::to_string(seq2++) + ".pcd", tf_cloud_);
+      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2_theta/deblurred/" + std::to_string(seq2++) + ".pcd", tf_cloud_);
       // }
 
       out_cloud = tf_cloud_;
@@ -167,7 +167,14 @@ namespace ichthus_lidar_driver_ros2
 
         const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_inv * sensorTF_point};
 
-        theta -= w * time_offset;
+        if (w > 0)
+        {
+          theta -= w * time_offset;
+        }
+        else
+        {
+          theta += w * time_offset;
+        }
         tf2::Quaternion baselink_quat{};
         baselink_quat.setRPY(0.0, 0.0, theta);
 
