@@ -11,10 +11,8 @@ namespace ichthus_lidar_driver_ros2
   {
     struct Velocity
     {
-      // std::chrono::nanoseconds timestamp;
       std_msgs::msg::Header header;
       float linear_x;
-      float linear_y;
       float angular_z;
     };
 

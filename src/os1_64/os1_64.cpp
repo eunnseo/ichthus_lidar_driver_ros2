@@ -1,5 +1,5 @@
 #include <ichthus_lidar_driver_ros2/sensor/os1_64/os1_64.hpp>
-
+#include <iomanip> 
 
 namespace ichthus_lidar_driver_ros2
 {
@@ -146,7 +146,8 @@ namespace ichthus_lidar_driver_ros2
           const os1_64_packet::Header &header = pkt_ptr->blocks[blk_idx].header;
 
           uint64_t ts = ((uint64_t *)header.timestamp)[0]; // nanosec
-          if (out_cloud.empty())
+          // if (out_cloud.empty())
+          if (blk_idx == (BLOCKS_PER_PACKET - 1))
           {
             out_cloud.header.stamp = ts * 0.001; // nanosec -> microsec
           }

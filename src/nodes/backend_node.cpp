@@ -86,7 +86,6 @@ namespace ichthus_lidar_driver_ros2
       sensor::Velocity vel{};
       vel.header.stamp = msg->header.stamp;
       vel.linear_x = msg->twist.twist.linear.x;
-      vel.linear_y = msg->twist.twist.linear.y;
       vel.angular_z = msg->twist.twist.angular.z;
 
       for (uint32_t ns_i = 0; ns_i < param_.ns.size(); ns_i++)
@@ -108,21 +107,21 @@ namespace ichthus_lidar_driver_ros2
     void BackendNode::callbackTimer()
     {
       pcl::PointCloud<PointT> out_cloud;
-      uint64_t oldest_ts = 0;
+
+      uint64_t nearest_ts = 0;
       for (uint32_t cld_i = 0; cld_i < in_cloud_arr_.size(); cld_i++)
       {
         pcl::PointCloud<PointT> tf_cloud;
         in_cloud_arr_[cld_i]->popCloud(tf_cloud);
 
-        if (oldest_ts > tf_cloud.header.stamp || oldest_ts == 0)
+        if (nearest_ts < tf_cloud.header.stamp)
         {
-          oldest_ts = tf_cloud.header.stamp;
+          nearest_ts = tf_cloud.header.stamp;
         }
 
         out_cloud += tf_cloud;
       }
-      out_cloud.header.stamp = oldest_ts;
-      // std::cout << "Backend merged_cloud timestamp: " << out_cloud.header.stamp << std::endl;
+      out_cloud.header.stamp = nearest_ts;
 
       sensor_msgs::msg::PointCloud2::UniquePtr out_msg(new sensor_msgs::msg::PointCloud2);
       pcl::toROSMsg(out_cloud, *out_msg);
