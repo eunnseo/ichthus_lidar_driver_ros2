@@ -1,4 +1,5 @@
 #include <ichthus_lidar_driver_ros2/lib/backend.hpp>
+#include <iomanip> 
 
 namespace ichthus_lidar_driver_ros2
 {
@@ -38,9 +39,6 @@ namespace ichthus_lidar_driver_ros2
 
     void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
     {
-      // pcl::PointCloud<PointT>::Ptr tf_cloud_ptr(new pcl::PointCloud<PointT>);
-      // pcl::transformPointCloud(in_cloud, *tf_cloud_ptr, transform_);
-
       // TODO: Merge deblurringPointCloud and transformPointCloud
       deblurringPointCloud(in_cloud);
 
@@ -71,6 +69,20 @@ namespace ichthus_lidar_driver_ros2
       //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/" + std::to_string(seq++) + ".pcd", tf_cloud_);
       // }
 
+      // if (tf_cloud_.size() > 0)
+      // {
+      //   static int seq1 = 0;
+      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud_);
+      // }
+
+      // deblurringPointCloud(tf_cloud_);
+
+      // if (tf_cloud_.size() > 0)
+      // {
+      //   static int seq2 = 0;
+      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurring_test_minus_city2/deblurred/" + std::to_string(seq2++) + ".pcd", tf_cloud_);
+      // }
+
       out_cloud = tf_cloud_;
       tf_cloud_.clear();
     }
@@ -98,7 +110,7 @@ namespace ichthus_lidar_driver_ros2
         {
           /* do nothing */
         }
-        break;
+        break; // ?
       }
     }
 
@@ -138,34 +150,30 @@ namespace ichthus_lidar_driver_ros2
         {
         }
 
-        float v_x{static_cast<float>(velocity_it->linear_x)};
-        float v_y{static_cast<float>(velocity_it->linear_y)};
+        float v{static_cast<float>(velocity_it->linear_x)};
         float w{static_cast<float>(velocity_it->angular_z)};
 
         double time_diff = std::abs(point_it->timestamp - rclcpp::Time(velocity_it->header.stamp).seconds());
         if (time_diff > 0.1)
         {
           std::cout << "Velocity time_stamp is too late. (" <<  time_diff << ") " << "Cloud not interpolate." << std::endl;
-          v_x = 0.0f;
-          v_y = 0.0f;
+          v = 0.0f;
           w = 0.0f;
         }
 
-        const float time_offset = static_cast<float>(point_it->timestamp - prev_time_stamp_sec);
+        const double time_offset = static_cast<double>(point_it->timestamp - prev_time_stamp_sec);
 
         const tf2::Vector3 sensorTF_point{point_it->x, point_it->y, point_it->z};
 
         const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_inv * sensorTF_point};
 
-        theta += w * time_offset;
+        theta -= w * time_offset;
         tf2::Quaternion baselink_quat{};
         baselink_quat.setRPY(0.0, 0.0, theta);
 
-        // const float dis = v * time_offset;
-        // x += dis * std::cos(theta);
-        // y += dis * std::sin(theta);
-        x += v_x * time_offset;
-        y += v_y * time_offset;
+        const double dis = v * time_offset;
+        x -= dis * std::cos(theta);
+        y -= dis * std::sin(theta);
 
         tf2::Transform baselinkTF_odom{};
         baselinkTF_odom.setOrigin(tf2::Vector3(x, y, 0.0));
