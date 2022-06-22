@@ -34,19 +34,22 @@ namespace ichthus_lidar_driver_ros2
       quat.setRPY(pose.roll_, pose.pitch_, pose.yaw_);
       tf2_transform.setOrigin(tf2::Vector3(pose.x_, pose.y_, pose.z_));
       tf2_transform.setRotation(quat);
+      std::cout << "tf2_transform.getOrigin().getX() = " << tf2_transform.getOrigin().getX() << std::endl;
+      std::cout << "tf2_transform.getOrigin().getY() = " << tf2_transform.getOrigin().getY() << std::endl;
+      std::cout << "tf2_transform.getOrigin().getZ() = " << tf2_transform.getOrigin().getZ() << std::endl;
+      // std::cout << "tf2_transform.getRotation() = " << tf2_transform.getRotation() << std::endl;
       tf2_base_link_to_sensor_ = tf2_transform;
     }
 
     void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
     {
-      // TODO: Merge deblurringPointCloud and transformPointCloud
       deblurringPointCloud(in_cloud);
 
-      pcl::PointCloud<PointT> tf_cloud;
-      pcl::transformPointCloud(in_cloud, tf_cloud, transform_);
+      // pcl::PointCloud<PointT> tf_cloud;
+      // pcl::transformPointCloud(in_cloud, tf_cloud, transform_);
 
-      tf_cloud_ += tf_cloud;
-      // tf_cloud_.clear();
+      // tf_cloud_ += tf_cloud;
+      tf_cloud_ += in_cloud;
     }
 
     void InputCloud::popCloud(pcl::PointCloud<PointT> &out_cloud)
@@ -133,7 +136,7 @@ namespace ichthus_lidar_driver_ros2
                         ? std::end(velocity_queue_) - 1
                         : velocity_it;
 
-      const tf2::Transform tf2_base_link_to_sensor_inv{tf2_base_link_to_sensor_.inverse()};
+      // const tf2::Transform tf2_base_link_to_sensor_inv{tf2_base_link_to_sensor_.inverse()};
     
       for (; point_it != cloud.begin(); --point_it)
       {
@@ -162,7 +165,7 @@ namespace ichthus_lidar_driver_ros2
 
         const tf2::Vector3 sensorTF_point{point_it->x, point_it->y, point_it->z};
 
-        const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_inv * sensorTF_point};
+        const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_ * sensorTF_point};
 
         theta -= w * time_offset;
         tf2::Quaternion baselink_quat{};
@@ -178,11 +181,15 @@ namespace ichthus_lidar_driver_ros2
 
         const tf2::Vector3 base_linkTF_trans_point{baselinkTF_odom * base_linkTF_point};
 
-        const tf2::Vector3 sensorTF_trans_point{tf2_base_link_to_sensor_ * base_linkTF_trans_point};
+        // const tf2::Vector3 sensorTF_trans_point{tf2_base_link_to_sensor_ * base_linkTF_trans_point};
 
-        point_it->x = sensorTF_trans_point.getX();
-        point_it->y = sensorTF_trans_point.getY();
-        point_it->z = sensorTF_trans_point.getZ();
+        // point_it->x = sensorTF_trans_point.getX();
+        // point_it->y = sensorTF_trans_point.getY();
+        // point_it->z = sensorTF_trans_point.getZ();
+
+        point_it->x = base_linkTF_trans_point.getX();
+        point_it->y = base_linkTF_trans_point.getY();
+        point_it->z = base_linkTF_trans_point.getZ();
 
         next_time_stamp_sec = point_it->timestamp;
       }
