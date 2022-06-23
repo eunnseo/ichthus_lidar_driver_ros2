@@ -16,6 +16,7 @@ namespace ichthus_lidar_driver_ros2
       param_.ns = declare_parameter("ns", std::vector<std::string>());
       param_.frame_id = declare_parameter("out_cloud.frame_id", "");
       param_.period_ms = declare_parameter("out_cloud.period_ms", 100);
+      param_.use_deblurring = declare_parameter("out_cloud.use_deblurring", true);
 
       printBackendParams();
 
@@ -49,7 +50,7 @@ namespace ichthus_lidar_driver_ros2
               // TODO: Do not use lambda function
               pcl::PointCloud<PointT> in_cloud;
               pcl::fromROSMsg(*msg, in_cloud);
-              in_cloud_arr_[ns_i]->addCloud(in_cloud);
+              in_cloud_arr_[ns_i]->addCloud(in_cloud, param_.use_deblurring);
             });
       }
 
@@ -79,6 +80,7 @@ namespace ichthus_lidar_driver_ros2
       std::cout << "\n";
       std::cout << "[backend param] frame_id: " << param_.frame_id << std::endl;
       std::cout << "[backend param] period_ms: " << param_.period_ms << std::endl;
+      std::cout << "[backend param] use_deblurring: " << param_.use_deblurring << std::endl;
     }
 
     void BackendNode::callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)

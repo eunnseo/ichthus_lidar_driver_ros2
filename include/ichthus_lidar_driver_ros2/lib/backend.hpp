@@ -48,12 +48,14 @@ namespace ichthus_lidar_driver_ros2
 
       void initLiDARTF(const Pose &pose);
 
-      void addCloud(pcl::PointCloud<PointT> &in_cloud);
+      void addCloud(pcl::PointCloud<PointT> &in_cloud, const bool use_deblurring);
       void popCloud(pcl::PointCloud<PointT> &out_cloud);
 
       // void clearCloud();
 
       void addVelocity(const sensor::Velocity &vel);
+
+      bool processPointCloud(pcl::PointCloud<PointT> &cloud);
       bool deblurringPointCloud(pcl::PointCloud<PointT> &cloud);
 
     private:
@@ -65,6 +67,7 @@ namespace ichthus_lidar_driver_ros2
       pcl::PointCloud<PointT> tf_cloud_;
       pcl::PointCloud<PointT> in_cloud_;
 
+      // TODO: std::deque -> std::list
       std::deque<sensor::Velocity> velocity_queue_;
     }; // class InputCloud
 

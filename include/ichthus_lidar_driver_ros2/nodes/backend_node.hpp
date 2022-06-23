@@ -39,12 +39,13 @@ namespace ichthus_lidar_driver_ros2
       {
         std::string frame_id;
         int period_ms;
+        bool use_deblurring;
 
         std::vector<std::string> ns; // namespace
         backend::Pose cloud_pose;
 
         Param()
-            : frame_id("base_link"), period_ms(100)
+            : frame_id("base_link"), period_ms(100), use_deblurring(true)
         {
         }
       } param_;
