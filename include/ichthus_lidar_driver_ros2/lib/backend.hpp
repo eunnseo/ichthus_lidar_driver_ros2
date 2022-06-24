@@ -48,8 +48,8 @@ namespace ichthus_lidar_driver_ros2
 
       void initLiDARTF(const Pose &pose);
 
-      void addCloud(pcl::PointCloud<PointT> &in_cloud, const bool use_deblurring);
-      void popCloud(pcl::PointCloud<PointT> &out_cloud);
+      void addCloud(pcl::PointCloud<PointT> &in_cloud);
+      void popCloud(pcl::PointCloud<PointT> &out_cloud, const bool use_deblurring);
 
       // void clearCloud();
 
@@ -64,7 +64,7 @@ namespace ichthus_lidar_driver_ros2
       Eigen::Matrix4f mat_transform_; // base_link to sensor
       tf2::Transform tf2_transform_; // base_link to sensor
 
-      pcl::PointCloud<PointT> tf_cloud_;
+      pcl::PointCloud<PointT> out_cloud_;
       pcl::PointCloud<PointT> in_cloud_;
 
       // TODO: std::deque -> std::list

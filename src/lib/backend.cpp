@@ -44,30 +44,32 @@ namespace ichthus_lidar_driver_ros2
       // std::cout << "tf2_transform.getRotation() = " << tf2_transform.getRotation() << std::endl;
     }
 
-    void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud, const bool use_deblurring)
+    void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
     {
-      if (use_deblurring)
-      {
-        // std::cout << "deblurring on\n";
-        processPointCloud(in_cloud, tf2_transform_);
+      // if (use_deblurring)
+      // {
+      //   // std::cout << "deblurring on\n";
+      //   processPointCloud(in_cloud, tf2_transform_);
 
-        tf_cloud_ += in_cloud;
-      }
-      else
-      {
-        // std::cout << "deblurring off\n";
-        pcl::PointCloud<PointT> tf_cloud;
-        pcl::transformPointCloud(in_cloud, tf_cloud, mat_transform_);
+      //   out_cloud_ += in_cloud;
+      // }
+      // else
+      // {
+      //   // std::cout << "deblurring off\n";
+      //   pcl::PointCloud<PointT> tf_cloud;
+      //   pcl::transformPointCloud(in_cloud, tf_cloud, mat_transform_);
         
-        tf_cloud_ += tf_cloud;
-      }
+      //   out_cloud_ += tf_cloud;
+      // }
+
+      out_cloud_ += in_cloud;
     }
 
-    void InputCloud::popCloud(pcl::PointCloud<PointT> &out_cloud)
+    void InputCloud::popCloud(pcl::PointCloud<PointT> &out_cloud, const bool use_deblurring)
     {
-      if (tf_cloud_.empty())
+      if (out_cloud_.empty())
       {
-        // std::cerr << "tf_cloud_ is empty." << std::endl;
+        // std::cerr << "out_cloud_ is empty." << std::endl;
         return;
       }
       else if (velocity_queue_.empty())
@@ -81,24 +83,39 @@ namespace ichthus_lidar_driver_ros2
 
       /********** save pcd files **********/
       // pcl::PointCloud<PointT> tf_cloud;
-      // pcl::transformPointCloud(tf_cloud_, tf_cloud, mat_transform_);
-      // if (tf_cloud_.size() > 0)
+      // pcl::transformPointCloud(out_cloud_, tf_cloud, mat_transform_);
+      // if (out_cloud_.size() > 0)
       // {
       //   static int seq1 = 0;
       //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud);
       // }
       // tf_cloud.clear();
 
-      // processPointCloud(tf_cloud_, tf2_transform_);
-      // if (tf_cloud_.size() > 0)
+      // processPointCloud(out_cloud_, tf2_transform_);
+      // if (out_cloud_.size() > 0)
       // {
       //   static int seq2 = 0;
-      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurred/" + std::to_string(seq2++) + ".pcd", tf_cloud_);
+      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurred/" + std::to_string(seq2++) + ".pcd", out_cloud_);
       // }
       /************************************/
 
-      out_cloud = tf_cloud_;
-      tf_cloud_.clear();
+      if (use_deblurring)
+      {
+        // std::cout << "deblurring on\n";
+        processPointCloud(out_cloud_, tf2_transform_);
+
+        out_cloud = out_cloud_;
+      }
+      else
+      {
+        // std::cout << "deblurring off\n";
+        pcl::PointCloud<PointT> tf_cloud;
+        pcl::transformPointCloud(out_cloud_, tf_cloud, mat_transform_);
+    
+        out_cloud = tf_cloud;
+      }
+
+      out_cloud_.clear();
     }
 
     void InputCloud::addVelocity(const sensor::Velocity &vel)
