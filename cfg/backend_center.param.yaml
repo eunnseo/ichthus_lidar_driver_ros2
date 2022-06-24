@@ -17,3 +17,4 @@
       frame_id: "base_link"
       period_ms: 100
       # rate: 10 # Hz
+      use_deblurring: true
