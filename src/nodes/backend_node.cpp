@@ -50,7 +50,7 @@ namespace ichthus_lidar_driver_ros2
               // TODO: Do not use lambda function
               pcl::PointCloud<PointT> in_cloud;
               pcl::fromROSMsg(*msg, in_cloud);
-              in_cloud_arr_[ns_i]->addCloud(in_cloud, param_.use_deblurring);
+              in_cloud_arr_[ns_i]->addCloud(in_cloud);
             });
       }
 
@@ -80,7 +80,10 @@ namespace ichthus_lidar_driver_ros2
       std::cout << "\n";
       std::cout << "[backend param] frame_id: " << param_.frame_id << std::endl;
       std::cout << "[backend param] period_ms: " << param_.period_ms << std::endl;
-      std::cout << "[backend param] use_deblurring: " << param_.use_deblurring << std::endl;
+      if (param_.use_deblurring)
+        std::cout << "[backend param] use_deblurring: true\n";
+      else
+        std::cout << "[backend param] use_deblurring: false\n";
     }
 
     void BackendNode::callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)
@@ -114,7 +117,7 @@ namespace ichthus_lidar_driver_ros2
       for (uint32_t cld_i = 0; cld_i < in_cloud_arr_.size(); cld_i++)
       {
         pcl::PointCloud<PointT> tf_cloud;
-        in_cloud_arr_[cld_i]->popCloud(tf_cloud);
+        in_cloud_arr_[cld_i]->popCloud(tf_cloud, param_.use_deblurring);
 
         if (nearest_ts < tf_cloud.header.stamp)
         {
