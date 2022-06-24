@@ -26,8 +26,8 @@ namespace ichthus_lidar_driver_ros2
 
       mat_transform_ = (tl * rot_z * rot_y * rot_x).matrix();
 
-      std::cout << "[backend] Transform matrix (Eigen matrix): " << std::endl;
-      std::cout << mat_transform_ << std::endl;
+      // std::cout << "[backend] Transform matrix (Eigen matrix): " << std::endl;
+      // std::cout << mat_transform_ << std::endl;
 
       tf2::Quaternion quat{};
       tf2::Transform tf2_transform{};
@@ -37,11 +37,14 @@ namespace ichthus_lidar_driver_ros2
 
       tf2_transform_ = tf2_transform;
 
-      std::cout << "[backend] Transform matrix (tf2): " << std::endl;
-      std::cout << "tf2_transform_.getOrigin().getX() = " << tf2_transform_.getOrigin().getX() << std::endl;
-      std::cout << "tf2_transform_.getOrigin().getY() = " << tf2_transform_.getOrigin().getY() << std::endl;
-      std::cout << "tf2_transform_.getOrigin().getZ() = " << tf2_transform_.getOrigin().getZ() << std::endl;
-      // std::cout << "tf2_transform.getRotation() = " << tf2_transform.getRotation() << std::endl;
+      // std::cout << "[backend] Transform matrix (tf2): " << std::endl;
+      // std::cout << "tf2_transform_.getOrigin().getX() = " << tf2_transform_.getOrigin().getX() << std::endl;
+      // std::cout << "tf2_transform_.getOrigin().getY() = " << tf2_transform_.getOrigin().getY() << std::endl;
+      // std::cout << "tf2_transform_.getOrigin().getZ() = " << tf2_transform_.getOrigin().getZ() << std::endl;
+      // std::cout << "tf2_transform_.getRotation().getX() = " << tf2_transform_.getRotation().getX() << std::endl;
+      // std::cout << "tf2_transform_.getRotation().getY() = " << tf2_transform_.getRotation().getY() << std::endl;
+      // std::cout << "tf2_transform_.getRotation().getZ() = " << tf2_transform_.getRotation().getZ() << std::endl;
+      // std::cout << "tf2_transform_.getRotation().getW() = " << tf2_transform_.getRotation().getW() << std::endl;
     }
 
     void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
