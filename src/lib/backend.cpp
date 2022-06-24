@@ -46,22 +46,6 @@ namespace ichthus_lidar_driver_ros2
 
     void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
     {
-      // if (use_deblurring)
-      // {
-      //   // std::cout << "deblurring on\n";
-      //   processPointCloud(in_cloud, tf2_transform_);
-
-      //   out_cloud_ += in_cloud;
-      // }
-      // else
-      // {
-      //   // std::cout << "deblurring off\n";
-      //   pcl::PointCloud<PointT> tf_cloud;
-      //   pcl::transformPointCloud(in_cloud, tf_cloud, mat_transform_);
-        
-      //   out_cloud_ += tf_cloud;
-      // }
-
       out_cloud_ += in_cloud;
     }
 
@@ -72,9 +56,9 @@ namespace ichthus_lidar_driver_ros2
         // std::cerr << "out_cloud_ is empty." << std::endl;
         return;
       }
-      else if (velocity_queue_.empty())
+      else if (velocity_list_.empty())
       {
-        std::cerr << "Velocity Queue is empty." << std::endl;
+        std::cerr << "Velocity List is empty." << std::endl;
       }
       else
       {
@@ -120,15 +104,15 @@ namespace ichthus_lidar_driver_ros2
 
     void InputCloud::addVelocity(const sensor::Velocity &vel)
     {
-      velocity_queue_.push_back(vel);
+      velocity_list_.push_back(vel);
 
-      while (!velocity_queue_.empty())
+      while (!velocity_list_.empty())
       {
         if ( // NOLINT
-            rclcpp::Time(velocity_queue_.front().header.stamp) <
+            rclcpp::Time(velocity_list_.front().header.stamp) <
             rclcpp::Time(vel.header.stamp) - rclcpp::Duration::from_seconds(1.0))
         {
-          velocity_queue_.pop_front();
+          velocity_list_.pop_front();
         }
         else
         {
@@ -141,9 +125,9 @@ namespace ichthus_lidar_driver_ros2
     /* deblurring + transform (base_link to sensor) */
     bool InputCloud::processPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_transform)
     {
-      if (cloud.empty() || velocity_queue_.empty())
+      if (cloud.empty() || velocity_list_.empty())
       {
-        // std::cerr << "cloud or velocity_queue_ is empty." << std::endl;
+        // std::cerr << "cloud or velocity_list_ is empty." << std::endl;
         return false;
       }
 
@@ -155,20 +139,20 @@ namespace ichthus_lidar_driver_ros2
       double next_time_stamp_sec{point_it->timestamp};
 
       auto velocity_it = std::lower_bound(
-          std::begin(velocity_queue_), std::end(velocity_queue_),
+          velocity_list_.begin(), velocity_list_.end(),
           last_point_time_stamp_sec,
           [](const sensor::Velocity &vel, const double t)
           {
             return rclcpp::Time(vel.header.stamp).seconds() < t;
           });
-      velocity_it = velocity_it == std::end(velocity_queue_)
-                        ? std::end(velocity_queue_) - 1
+      velocity_it = velocity_it == velocity_list_.end()
+                        ? std::prev(velocity_list_.end())
                         : velocity_it;
 
       for (; point_it != cloud.begin(); --point_it)
       {
         for (;
-             (velocity_it != std::end(velocity_queue_) - 1 &&
+             (velocity_it != std::prev(velocity_list_.end()) &&
               point_it->timestamp > rclcpp::Time(velocity_it->header.stamp).seconds());
              ++velocity_it)
         {
