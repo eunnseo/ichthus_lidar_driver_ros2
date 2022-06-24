@@ -33,6 +33,8 @@ namespace ichthus_lidar_driver_ros2
         param_.cloud_pose.y_ = declare_parameter(key + ".pose_y", double());
         param_.cloud_pose.z_ = declare_parameter(key + ".pose_z", double());
 
+        printPose(param_.ns[ns_i], param_.cloud_pose);
+
         param_.cloud_pose.yaw_ = deg2Rad(param_.cloud_pose.yaw_);
         param_.cloud_pose.pitch_ = deg2Rad(param_.cloud_pose.pitch_);
         param_.cloud_pose.roll_ = deg2Rad(param_.cloud_pose.roll_);
@@ -86,6 +88,18 @@ namespace ichthus_lidar_driver_ros2
         std::cout << "[backend param] use_deblurring: false\n";
     }
 
+    void BackendNode::printPose(const std::string ns, const backend::Pose &pose)
+    {
+      std::cout << "[backend param] " << ns
+                << " LiDAR Pose (yaw,pitch,roll,x,y,z) = "
+                << pose.yaw_ << " "
+                << pose.pitch_ << " "
+                << pose.roll_ << " "
+                << pose.x_ << " "
+                << pose.y_ << " "
+                << pose.z_ << std::endl;
+    }
+
     void BackendNode::callbackCanOdom(const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr msg)
     {
       sensor::Velocity vel{};
@@ -97,7 +111,6 @@ namespace ichthus_lidar_driver_ros2
       {
         in_cloud_arr_[ns_i]->addVelocity(vel);
       }
-
     }
 
     // void BackendNode::callbackLiDARCloud(const sensor_msgs::msg::PointCloud2::UniquePtr msg, const int cld_idx)
