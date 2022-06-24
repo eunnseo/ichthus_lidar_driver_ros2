@@ -55,14 +55,14 @@ namespace ichthus_lidar_driver_ros2
 
       void addVelocity(const sensor::Velocity &vel);
 
-      bool processPointCloud(pcl::PointCloud<PointT> &cloud);
-      bool deblurringPointCloud(pcl::PointCloud<PointT> &cloud);
+      bool processPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_transform);
+      // bool deblurringPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_base_link_to_sensor_);
 
     private:
       std::string ns_;
       Pose pose_;
-      Eigen::Matrix4f transform_;
-      tf2::Transform tf2_base_link_to_sensor_;
+      Eigen::Matrix4f mat_transform_; // base_link to sensor
+      tf2::Transform tf2_transform_; // base_link to sensor
 
       pcl::PointCloud<PointT> tf_cloud_;
       pcl::PointCloud<PointT> in_cloud_;
