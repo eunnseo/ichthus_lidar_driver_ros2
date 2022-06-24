@@ -67,8 +67,7 @@ namespace ichthus_lidar_driver_ros2
       pcl::PointCloud<PointT> out_cloud_;
       pcl::PointCloud<PointT> in_cloud_;
 
-      // TODO: std::deque -> std::list
-      std::deque<sensor::Velocity> velocity_queue_;
+      std::list<sensor::Velocity> velocity_list_;
     }; // class InputCloud
 
   }
