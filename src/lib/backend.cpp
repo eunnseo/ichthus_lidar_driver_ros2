@@ -47,12 +47,12 @@ namespace ichthus_lidar_driver_ros2
       // std::cout << "tf2_transform_.getRotation().getW() = " << tf2_transform_.getRotation().getW() << std::endl;
     }
 
-    void InputCloud::addCloud(pcl::PointCloud<PointT> &in_cloud)
+    void InputCloud::addCloud(pcl::PointCloud<pcl::PointXYZITCA> &in_cloud)
     {
       out_cloud_ += in_cloud;
     }
 
-    void InputCloud::popCloud(pcl::PointCloud<PointT> &out_cloud, const bool use_deblurring)
+    void InputCloud::popCloud(pcl::PointCloud<pcl::PointXYZI> &out_cloud, const bool use_deblurring)
     {
       if (out_cloud_.empty())
       {
@@ -69,7 +69,7 @@ namespace ichthus_lidar_driver_ros2
       }
 
       /********** save pcd files **********/
-      // pcl::PointCloud<PointT> tf_cloud;
+      // pcl::PointCloud<pcl::PointXYZITCA> tf_cloud;
       // pcl::transformPointCloud(out_cloud_, tf_cloud, mat_transform_);
       // if (out_cloud_.size() > 0)
       // {
@@ -91,15 +91,17 @@ namespace ichthus_lidar_driver_ros2
         // std::cout << "deblurring on\n";
         processPointCloud(out_cloud_, tf2_transform_);
 
-        out_cloud = out_cloud_;
+        pcl::copyPointCloud(out_cloud_, out_cloud);
+        // out_cloud = out_cloud_;
       }
       else
       {
         // std::cout << "deblurring off\n";
-        pcl::PointCloud<PointT> tf_cloud;
+        pcl::PointCloud<pcl::PointXYZITCA> tf_cloud;
         pcl::transformPointCloud(out_cloud_, tf_cloud, mat_transform_);
-    
-        out_cloud = tf_cloud;
+
+        pcl::copyPointCloud(tf_cloud, out_cloud);
+        // out_cloud = tf_cloud;
       }
 
       out_cloud_.clear();
@@ -126,7 +128,7 @@ namespace ichthus_lidar_driver_ros2
     }
 
     /* deblurring + transform (base_link to sensor) */
-    bool InputCloud::processPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_transform)
+    bool InputCloud::processPointCloud(pcl::PointCloud<pcl::PointXYZITCA> &cloud, const tf2::Transform &tf2_transform)
     {
       if (cloud.empty() || velocity_list_.empty())
       {
@@ -134,7 +136,7 @@ namespace ichthus_lidar_driver_ros2
         return false;
       }
 
-      pcl::PointCloud<PointT>::iterator point_it = cloud.end() - 1;
+      pcl::PointCloud<pcl::PointXYZITCA>::iterator point_it = cloud.end() - 1;
       float theta{0.0f};
       float x{0.0f};
       float y{0.0f};
@@ -204,7 +206,7 @@ namespace ichthus_lidar_driver_ros2
       return true;
     }
 
-    // bool InputCloud::deblurringPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_base_link_to_sensor_)
+    // bool InputCloud::deblurringPointCloud(pcl::PointCloud<pcl::PointXYZITCA> &cloud, const tf2::Transform &tf2_base_link_to_sensor_)
     // {
     //   if (cloud.empty() || velocity_queue_.empty())
     //   {
@@ -212,7 +214,7 @@ namespace ichthus_lidar_driver_ros2
     //     return false;
     //   }
 
-    //   pcl::PointCloud<PointT>::iterator point_it = cloud.end() - 1;
+    //   pcl::PointCloud<pcl::PointXYZITCA>::iterator point_it = cloud.end() - 1;
     //   float theta{0.0f};
     //   float x{0.0f};
     //   float y{0.0f};

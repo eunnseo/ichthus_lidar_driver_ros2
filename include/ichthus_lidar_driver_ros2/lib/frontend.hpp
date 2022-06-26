@@ -78,10 +78,10 @@ namespace ichthus_lidar_driver_ros2
       net::PacketState poll();
       bool readLiDARPacket(uint8_t *buf, int max_buf_size, std::string &dst_ipaddr, ssize_t &nbytes);
 
-      void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud);
+      void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud);
 
       void addPacket(std::vector<uint8_t> &pkt_msg_buf);
-      void flushPacket(pcl::PointCloud<PointT> &out_cloud);
+      void flushPacket(pcl::PointCloud<pcl::PointXYZITCA> &out_cloud);
 
     private:
       std::string ip_addr_;

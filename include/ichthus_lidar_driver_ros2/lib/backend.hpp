@@ -23,8 +23,6 @@ namespace ichthus_lidar_driver_ros2
 {
   namespace backend
   {
-#define PointT pcl::PointXYZITCA
-
     struct Pose
     {
       double yaw_; // radian
@@ -48,15 +46,15 @@ namespace ichthus_lidar_driver_ros2
 
       void initLiDARTF(const Pose &pose);
 
-      void addCloud(pcl::PointCloud<PointT> &in_cloud);
-      void popCloud(pcl::PointCloud<PointT> &out_cloud, const bool use_deblurring);
+      void addCloud(pcl::PointCloud<pcl::PointXYZITCA> &in_cloud);
+      void popCloud(pcl::PointCloud<pcl::PointXYZI> &out_cloud, const bool use_deblurring);
 
       // void clearCloud();
 
       void addVelocity(const sensor::Velocity &vel);
 
-      bool processPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_transform);
-      // bool deblurringPointCloud(pcl::PointCloud<PointT> &cloud, const tf2::Transform &tf2_base_link_to_sensor_);
+      bool processPointCloud(pcl::PointCloud<pcl::PointXYZITCA> &cloud, const tf2::Transform &tf2_transform);
+      // bool deblurringPointCloud(pcl::PointCloud<pcl::PointXYZITCA> &cloud, const tf2::Transform &tf2_base_link_to_sensor_);
 
     private:
       std::string ns_;
@@ -64,8 +62,8 @@ namespace ichthus_lidar_driver_ros2
       Eigen::Matrix4f mat_transform_; // base_link to sensor
       tf2::Transform tf2_transform_; // base_link to sensor
 
-      pcl::PointCloud<PointT> out_cloud_;
-      pcl::PointCloud<PointT> in_cloud_;
+      pcl::PointCloud<pcl::PointXYZITCA> out_cloud_;
+      pcl::PointCloud<pcl::PointXYZITCA> in_cloud_;
 
       std::list<sensor::Velocity> velocity_list_;
     }; // class InputCloud

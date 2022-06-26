@@ -137,7 +137,7 @@ namespace ichthus_lidar_driver_ros2
 #ifdef USE_TIMER
                 frontend_.addPacket(buf);
 #else
-                pcl::PointCloud<PointT> out_cloud;
+                pcl::PointCloud<pcl::PointXYZITCA> out_cloud;
                 frontend_.msg2Cloud(buf, out_cloud);
 
                 sensor_msgs::msg::PointCloud2::UniquePtr out_msg(new sensor_msgs::msg::PointCloud2);
@@ -169,7 +169,7 @@ namespace ichthus_lidar_driver_ros2
 #ifdef USE_TIMER
     void FrontendNode::callbackTimer()
     {
-      pcl::PointCloud<PointT> out_cloud;
+      pcl::PointCloud<pcl::PointXYZITCA> out_cloud;
       frontend_.flushPacket(out_cloud);
 
       sensor_msgs::msg::PointCloud2::UniquePtr out_msg(new sensor_msgs::msg::PointCloud2);

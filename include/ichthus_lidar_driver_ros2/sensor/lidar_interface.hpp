@@ -17,8 +17,6 @@ namespace ichthus_lidar_driver_ros2
     class LiDARInterface
     {
     public:
-#define PointT pcl::PointXYZITCA
-
       using Points = Eigen::Array<double, Eigen::Dynamic, 3>;
       using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
       using nsec = std::chrono::nanoseconds;
