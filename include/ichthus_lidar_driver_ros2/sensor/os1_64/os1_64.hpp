@@ -31,7 +31,7 @@ namespace ichthus_lidar_driver_ros2
 
         void initUsedPoints();
 
-        void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud);
+        void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud);
 
       private:
         const uint32_t encoder_ticks_per_rev_ = 90112; 

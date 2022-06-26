@@ -50,7 +50,7 @@ namespace ichthus_lidar_driver_ros2
               // this->callbackLiDARCloud(msg, ns_i);
 
               // TODO: Do not use lambda function
-              pcl::PointCloud<PointT> in_cloud;
+              pcl::PointCloud<pcl::PointXYZITCA> in_cloud;
               pcl::fromROSMsg(*msg, in_cloud);
               in_cloud_arr_[ns_i]->addCloud(in_cloud);
             });
@@ -117,19 +117,19 @@ namespace ichthus_lidar_driver_ros2
     // {
     //   // std::cout << "Received lidar cloud from: " << cld_idx << std::endl;
 
-    //   pcl::PointCloud<PointT> in_cloud;
+    //   pcl::PointCloud<pcl::PointXYZITCA> in_cloud;
     //   pcl::fromROSMsg(*msg, in_cloud);
     //   in_cloud_arr_[cld_idx]->addCloud(in_cloud);
     // }
 
     void BackendNode::callbackTimer()
     {
-      pcl::PointCloud<PointT> out_cloud;
+      pcl::PointCloud<pcl::PointXYZI> out_cloud;
 
       uint64_t nearest_ts = 0;
       for (uint32_t cld_i = 0; cld_i < in_cloud_arr_.size(); cld_i++)
       {
-        pcl::PointCloud<PointT> tf_cloud;
+        pcl::PointCloud<pcl::PointXYZI> tf_cloud;
         in_cloud_arr_[cld_i]->popCloud(tf_cloud, param_.use_deblurring);
 
         if (nearest_ts < tf_cloud.header.stamp)

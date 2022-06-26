@@ -134,7 +134,7 @@ namespace ichthus_lidar_driver_ros2
         chan_idx_arr.clear();
       }
 
-      void OusterI64::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud)
+      void OusterI64::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud)
       {
         double range_min = used_range_[0] * M_TO_MM;
         double range_max = used_range_[1] * M_TO_MM;
@@ -165,7 +165,7 @@ namespace ichthus_lidar_driver_ros2
             if (range < range_min || range > range_max)
               continue;
 
-            PointT point;
+            pcl::PointXYZITCA point;
             uint32_t table_idx = chan_idx * num_azimuth_ + azimuth_idx;
             point.x = lut_.direction(table_idx, 0) * range + lut_.offset(table_idx, 0);
             point.y = lut_.direction(table_idx, 1) * range + lut_.offset(table_idx, 1);

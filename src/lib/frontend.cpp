@@ -61,7 +61,7 @@ namespace ichthus_lidar_driver_ros2
       return retval;
     }
 
-    void Frontend::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<PointT> &out_cloud)
+    void Frontend::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud)
     {
       lidar_ptr_->msg2Cloud(pkt_msg_buf, out_cloud);
     }
@@ -71,7 +71,7 @@ namespace ichthus_lidar_driver_ros2
       packet_queue_.push(pkt_msg_buf);
     }
 
-    void Frontend::flushPacket(pcl::PointCloud<PointT> &out_cloud)
+    void Frontend::flushPacket(pcl::PointCloud<pcl::PointXYZITCA> &out_cloud)
     {
       while (!packet_queue_.empty())
       {
