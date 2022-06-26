@@ -13,8 +13,6 @@ namespace ichthus_lidar_driver_ros2
       ns_ = ns;
       pose_ = pose;
       initLiDARTF(pose_);
-
-      std::cout << std::endl;
     }
 
     void InputCloud::initLiDARTF(const backend::Pose &pose)

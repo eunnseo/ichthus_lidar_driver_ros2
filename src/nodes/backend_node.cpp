@@ -11,7 +11,7 @@ namespace ichthus_lidar_driver_ros2
         : Node("backend", node_options)
     // : Node("backend", rclcpp::NodeOptions().use_intra_process_comms(true))
     {
-      std::cout << "Backend construction " << this->get_name() << std::endl;
+      std::cout << "\nBackend construction " << this->get_name() << std::endl;
 
       param_.ns = declare_parameter("ns", std::vector<std::string>());
       param_.frame_id = declare_parameter("out_cloud.frame_id", "");

@@ -47,6 +47,10 @@ namespace ichthus_lidar_driver_ros2
         bool use_imu;
         int period_ms;
 
+        std::vector<int64_t> used_channels;
+        std::vector<int64_t> used_azimuths;
+        std::vector<double> used_range;
+
         Param()
             : use_pcap(false), pcap_file(""), pcap_wait_factor(0.6), lidar_port(7502), imu_port(7503), period_ms(100)
         {

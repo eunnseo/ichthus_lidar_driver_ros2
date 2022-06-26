@@ -11,7 +11,7 @@ namespace ichthus_lidar_driver_ros2
         : Node("frontend", node_options), MAX_BUFFER_SIZE(100000)
         // : Node("frontend", rclcpp::NodeOptions().use_intra_process_comms(true)), MAX_BUFFER_SIZE(100000)
     {
-      std::cout << "Frontend construction " << this->get_name() << std::endl;
+      std::cout << "\nFrontend construction " << this->get_name() << std::endl;
 
       param_.pcap_file = declare_parameter("pcap_file", "");
       param_.use_pcap = (param_.pcap_file != "");
@@ -30,10 +30,14 @@ namespace ichthus_lidar_driver_ros2
       std::vector<double> beam_altitude_angles = declare_parameter("beam_altitude_angles", std::vector<double>());
       std::vector<double> lidar_to_sensor_transform = declare_parameter("lidar_to_sensor_transform", std::vector<double>());
       double lidar_origin_to_beam_origin_mm = declare_parameter("lidar_origin_to_beam_origin_mm", 0.0);
-      std::vector<int64_t> used_channels = declare_parameter("used_channels", std::vector<int64_t>());
-      std::vector<int64_t> used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
-      std::vector<double> used_range = declare_parameter("used_range", std::vector<double>());
+      // std::vector<int64_t> used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      // std::vector<int64_t> used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
+      // std::vector<double> used_range = declare_parameter("used_range", std::vector<double>());
       /*******************************/
+
+      param_.used_channels = declare_parameter("used_channels", std::vector<int64_t>());
+      param_.used_azimuths = declare_parameter("used_azimuths", std::vector<int64_t>());
+      param_.used_range = declare_parameter("used_range", std::vector<double>());
 
       printFrontendParams();
 
@@ -49,9 +53,13 @@ namespace ichthus_lidar_driver_ros2
         frontend_.setToSensorTransform(lidar_to_sensor_transform);
         frontend_.setToBeamOrigin(lidar_origin_to_beam_origin_mm);
 
-        frontend_.setUsedChannels(used_channels);
-        frontend_.setUsedAzimuths(used_azimuths);
-        frontend_.setUsedRange(used_range);
+        frontend_.setUsedChannels(param_.used_channels);
+        frontend_.setUsedAzimuths(param_.used_azimuths);
+        frontend_.setUsedRange(param_.used_range);
+        
+        // frontend_.setUsedChannels(used_channels);
+        // frontend_.setUsedAzimuths(used_azimuths);
+        // frontend_.setUsedRange(used_range);
 
         frontend_.init();
       }
@@ -87,13 +95,31 @@ namespace ichthus_lidar_driver_ros2
       std::cout << "[frontend param] frame_id: " << param_.frame_id << std::endl;
       std::cout << "[frontend param] ip_addr: " << param_.ip_addr << std::endl;
       std::cout << "[frontend param] lidar_port: " << param_.lidar_port << std::endl;
-      // std::cout << "[frontend param] used_channels_num: " << param_.used_channels.size() / 2 << std::endl;
-      // std::cout << "[frontend param] used_range: "
-      // for (size_t i = 0; i < used_range.size(); i++)
-      // {
-      //   std::cout << used_range[i] << ", ";
-      // }
-      // std::cout << "\n";
+
+      std::cout << "[frontend param] used_channels num: ";
+      size_t min, max;
+      size_t used_channels_num = 0;
+      for (size_t i = 0; i < param_.used_channels.size(); i += 2)
+      {
+        min = param_.used_channels[i];
+        max = param_.used_channels[i+1];
+        used_channels_num += (max - min);
+      }
+      std::cout << used_channels_num << std::endl;
+      
+      std::cout << "[frontend param] used_azimuths num: ";
+      size_t used_azimuths_num = 0;
+      for (size_t i = 0; i < param_.used_azimuths.size(); i += 2)
+      {
+        min = param_.used_azimuths[i];
+        max = param_.used_azimuths[i+1];
+        used_azimuths_num += (max - min);
+      }
+      std::cout << used_azimuths_num << std::endl;
+      
+      std::cout << "[frontend param] used_range: "
+                << param_.used_range[0] << ", "
+                << param_.used_range[1] << "\n";
 
 #ifdef USE_TIMER
       std::cout << "[frontend param] period_ms: " << param_.period_ms << std::endl;
