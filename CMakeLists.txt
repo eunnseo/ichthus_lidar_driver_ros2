@@ -45,8 +45,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 ament_auto_add_library(frontend SHARED
   src/lib/frontend.cpp
   src/net/packet_utils.cpp
-  src/os1_64/os1_64_packet.cpp
-  src/os1_64/os1_64.cpp
+  src/sensor/os1_64/os1_64_packet.cpp
+  src/sensor/os1_64/os1_64.cpp
 )
 
 ament_auto_add_library(frontend_node SHARED

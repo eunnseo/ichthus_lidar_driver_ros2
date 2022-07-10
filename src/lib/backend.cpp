@@ -72,7 +72,7 @@ namespace ichthus_lidar_driver_ros2
       // if (out_cloud_.size() > 0)
       // {
       //   static int seq1 = 0;
-      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud);
+      //   pcl::io::savePCDFileBinary("/root/shared_dir/tmp/not_deblurred/" + std::to_string(seq1++) + ".pcd", tf_cloud);
       // }
       // tf_cloud.clear();
 
@@ -80,8 +80,9 @@ namespace ichthus_lidar_driver_ros2
       // if (out_cloud_.size() > 0)
       // {
       //   static int seq2 = 0;
-      //   pcl::io::savePCDFileBinary("/home/eunseo/tmp/deblurred/" + std::to_string(seq2++) + ".pcd", out_cloud_);
+      //   pcl::io::savePCDFileBinary("/root/shared_dir/tmp/deblurred/" + std::to_string(seq2++) + ".pcd", out_cloud_);
       // }
+      // pcl::copyPointCloud(out_cloud_, out_cloud);
       /************************************/
 
       if (use_deblurring)
