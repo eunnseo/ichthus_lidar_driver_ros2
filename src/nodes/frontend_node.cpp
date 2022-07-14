@@ -66,7 +66,6 @@ namespace ichthus_lidar_driver_ros2
 
       pub_lidar_cloud_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
           param_.ns + "/lidar_cloud",
-          // 5);
           rclcpp::SensorDataQoS{}.keep_last(1280));
 
 #ifdef USE_TIMER

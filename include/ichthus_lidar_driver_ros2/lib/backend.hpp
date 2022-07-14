@@ -49,8 +49,6 @@ namespace ichthus_lidar_driver_ros2
       void addCloud(pcl::PointCloud<pcl::PointXYZITCA> &in_cloud);
       void popCloud(pcl::PointCloud<pcl::PointXYZI> &out_cloud, const bool use_deblurring);
 
-      // void clearCloud();
-
       void addVelocity(const sensor::Velocity &vel);
 
       bool processPointCloud(pcl::PointCloud<pcl::PointXYZITCA> &cloud, const tf2::Transform &tf2_transform);

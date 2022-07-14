@@ -21,7 +21,7 @@ namespace ichthus_lidar_driver_ros2
       struct Header
       {
         uint32_t timestamp[TS_SIZE];
-        uint16_t measurement_id;
+        uint16_t measurement_id; // azimuth index
         uint16_t frame_id;
         uint32_t encoder_count;
       }; // 16 Bytes

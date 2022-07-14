@@ -152,7 +152,7 @@ namespace ichthus_lidar_driver_ros2
             out_cloud.header.stamp = ts * 0.001; // nanosec -> microsec
           }
           
-          uint32_t azimuth_idx = header.encoder_count / (encoder_ticks_per_rev_ / num_azimuth_);
+          uint32_t azimuth_idx = header.measurement_id;
 
           for (uint32_t chan_idx = 0; chan_idx < NUM_LIDAR_CHANNELS; chan_idx++)
           {

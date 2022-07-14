@@ -75,6 +75,7 @@ namespace ichthus_lidar_driver_ros2
       }
 
       void init();
+      
       net::PacketState poll();
       bool readLiDARPacket(uint8_t *buf, int max_buf_size, std::string &dst_ipaddr, ssize_t &nbytes);
 

@@ -66,6 +66,7 @@ namespace ichthus_lidar_driver_ros2
       lidar_ptr_->msg2Cloud(pkt_msg_buf, out_cloud);
     }
 
+#ifdef USE_TIMER
     void Frontend::addPacket(std::vector<uint8_t> &pkt_msg_buf)
     {
       packet_queue_.push(pkt_msg_buf);
@@ -81,13 +82,12 @@ namespace ichthus_lidar_driver_ros2
         packet_queue_.pop();
       }
 
-      
-
       // std::cout << "point cloud" << std::endl;
       // std::cout << "x: " << cloud.points[0].x << std::endl;
       // std::cout << "y: " << cloud.points[0].y << std::endl;
       // std::cout << "z: " << cloud.points[0].z << std::endl;
     }
+#endif
 
   }
 }

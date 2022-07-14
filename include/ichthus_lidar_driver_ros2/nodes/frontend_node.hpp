@@ -23,10 +23,6 @@ namespace ichthus_lidar_driver_ros2
       explicit FrontendNode(const rclcpp::NodeOptions &node_options);
       ~FrontendNode();
 
-      void printFrontendParams();
-
-      int packetLoopThread();
-
     private:
       const int MAX_BUFFER_SIZE;
 
@@ -57,10 +53,15 @@ namespace ichthus_lidar_driver_ros2
         }
       } param_;
 
+      rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_lidar_cloud_;
+
       std::thread poll_thread_;
+      
       frontend::Frontend frontend_;
 
-      rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_lidar_cloud_;
+      int packetLoopThread();
+
+      void printFrontendParams();
 
 #ifdef USE_TIMER
       rclcpp::TimerBase::SharedPtr timer_;

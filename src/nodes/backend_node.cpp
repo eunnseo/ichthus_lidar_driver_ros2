@@ -124,6 +124,7 @@ namespace ichthus_lidar_driver_ros2
 
     void BackendNode::callbackTimer()
     {
+      // auto start = rclcpp::Clock().now().nanoseconds();
       pcl::PointCloud<pcl::PointXYZI> out_cloud;
 
       uint64_t nearest_ts = 0;
@@ -139,6 +140,7 @@ namespace ichthus_lidar_driver_ros2
 
         out_cloud += tf_cloud;
       }
+      // auto end = rclcpp::Clock().now().nanoseconds();
       out_cloud.header.stamp = nearest_ts;
 
       sensor_msgs::msg::PointCloud2::UniquePtr out_msg(new sensor_msgs::msg::PointCloud2);
@@ -147,6 +149,10 @@ namespace ichthus_lidar_driver_ros2
 
       // pub_merged_cloud_->publish(std::move(out_msg));
       pub_merged_cloud_->publish(*out_msg);
+
+      // std::cout << "start: " << start << std::endl;
+      // std::cout << "end: " << end << std::endl;
+      // std::cout << "diff: " << end-start << std::endl;
     }
 
   }
