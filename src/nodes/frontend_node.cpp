@@ -127,7 +127,7 @@ namespace ichthus_lidar_driver_ros2
 
     int FrontendNode::packetLoopThread()
     {
-      // std::cout << "packetLoopThread.." << std::endl;
+      std::cout << "packetLoopThread.." << std::endl;
       int retval;
       long nbytes = -1;
       std::vector<uint8_t> buf(MAX_BUFFER_SIZE + 1); // -> 포인터
@@ -139,11 +139,16 @@ namespace ichthus_lidar_driver_ros2
         if (!param_.use_pcap)
         {
           state = frontend_.poll();
+          std::cout << "state: " << state << std::endl;
           if (state == net::PacketState::EXIT)
           {
             RCLCPP_INFO(this->get_logger(), "poll_client: caught signal, exiting");
             retval = EXIT_SUCCESS;
             break;
+          }
+          if (state == net::PacketState::TIMEOUT)
+          {
+            std::cout << "poll_client: timeout\n";
           }
           if (state & net::PacketState::PACKET_ERROR)
           {
@@ -154,10 +159,12 @@ namespace ichthus_lidar_driver_ros2
           }
           if (state & net::PacketState::LIDAR_DATA)
           {
+            std::cout << "poll_client: lidar_data\n";
             if (frontend_.readLiDARPacket(buf.data(), buf.size(), dst_ipaddr, nbytes))
             {
               if (param_.ip_addr == dst_ipaddr)
               {
+                std::cout << "param_.ip_addr == dst_ipaddr\n";
                 /* Midend */
 #ifdef USE_TIMER
                 frontend_.addPacket(buf);

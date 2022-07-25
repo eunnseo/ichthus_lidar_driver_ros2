@@ -47,6 +47,8 @@ ament_auto_add_library(frontend SHARED
   src/net/packet_utils.cpp
   src/sensor/os1_64/os1_64_packet.cpp
   src/sensor/os1_64/os1_64.cpp
+  src/sensor/vlp_16/vlp_16_packet.cpp
+  src/sensor/vlp_16/vlp_16.cpp
 )
 
 ament_auto_add_library(frontend_node SHARED

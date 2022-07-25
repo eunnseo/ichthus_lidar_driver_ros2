@@ -10,6 +10,8 @@
 #include <ichthus_lidar_driver_ros2/net/packet_utils.hpp>
 #include <ichthus_lidar_driver_ros2/sensor/os1_64/os1_64.hpp>
 #include <ichthus_lidar_driver_ros2/sensor/os1_64/os1_64_packet.hpp>
+#include <ichthus_lidar_driver_ros2/sensor/vlp_16/vlp_16.hpp>
+#include <ichthus_lidar_driver_ros2/sensor/vlp_16/vlp_16_packet.hpp>
 
 namespace ichthus_lidar_driver_ros2
 {

@@ -225,6 +225,7 @@ namespace ichthus_lidar_driver_ros2
 
     PacketState poll(SOCKET lidar_fd, SOCKET imu_fd, const int timeout_sec)
     {
+      std::cout << "poll1\n";
       fd_set rfds;
       FD_ZERO(&rfds);
       FD_SET(lidar_fd, &rfds);
@@ -262,6 +263,7 @@ namespace ichthus_lidar_driver_ros2
 
     PacketState poll(SOCKET lidar_fd, const int timeout_sec)
     {
+      std::cout << "poll2\n";
       fd_set rfds;
       FD_ZERO(&rfds);
       FD_SET(lidar_fd, &rfds);
@@ -271,6 +273,7 @@ namespace ichthus_lidar_driver_ros2
       tv.tv_usec = 0;
 
       int retval = select((int)lidar_fd + 1, &rfds, NULL, NULL, &tv);
+      std::cout << "retval = " << retval << std::endl;
 
       PacketState res = PacketState(0);
 

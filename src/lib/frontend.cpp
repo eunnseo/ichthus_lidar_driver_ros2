@@ -6,18 +6,19 @@ namespace ichthus_lidar_driver_ros2
   {
     void Frontend::init()
     {
-      // std::cout << "before lidar_sockfd_: " << lidar_sockfd_ << std::endl;
+      std::cout << "before lidar_sockfd_: " << lidar_sockfd_ << std::endl;
       // std::cout << "before imu_sockfd_: " << imu_sockfd_ << std::endl;
 
       lidar_sockfd_ = net::create_udp_socket(lidar_port_);
+      // std::cout << "lidar_sockfd_:" << lidar_sockfd_ << std::endl;
       imu_sockfd_ = net::create_udp_socket(imu_port_);
 
-      // std::cout << "after lidar_sockfd_: " << lidar_sockfd_ << std::endl;
+      std::cout << "after lidar_sockfd_: " << lidar_sockfd_ << std::endl;
       // std::cout << "after imu_sockfd_: " << imu_sockfd_ << std::endl;
 
       if (model_ == "OS1-64")
       {
-        // std::cout << "model: " << model_ << std::endl;
+        std::cout << "model: " << model_ << std::endl;
         lidar_ptr_.reset(new sensor::os1_64::OusterI64(lidar_origin_to_beam_origin_mm_,
                                                        lidar_to_sensor_transform_,
                                                        beam_azimuth_angles_,
@@ -28,6 +29,14 @@ namespace ichthus_lidar_driver_ros2
       }
       else if (model_ == "VLP-16")
       {
+        std::cout << "model: " << model_ << std::endl;
+        lidar_ptr_.reset(new sensor::vlp_16::Velodyne16(lidar_origin_to_beam_origin_mm_,
+                                                       lidar_to_sensor_transform_,
+                                                       beam_azimuth_angles_,
+                                                       beam_altitude_angles_,
+                                                       used_channels_,
+                                                       used_azimuths_,
+                                                       used_range_));
       }
       else if (model_ == "PDR-64")
       {
@@ -43,7 +52,7 @@ namespace ichthus_lidar_driver_ros2
 
     net::PacketState Frontend::poll()
     {
-      // std::cout << "Start polling" << std::endl;
+      std::cout << "Start polling" << std::endl;
       // return (net::poll(lidar_sockfd_, imu_sockfd_));
       return (net::poll(lidar_sockfd_));
     }
