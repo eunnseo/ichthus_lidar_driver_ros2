@@ -172,8 +172,8 @@ namespace ichthus_lidar_driver_ros2
             point.z = lut_.direction(table_idx, 2) * range + lut_.offset(table_idx, 2);
             // std::cout << "(x,y,z)(m) = (" << point.x << "," << point.y << "," << point.z << ")" << std::endl;
 
-            // point.intensity = static_cast<float>(data.signal_photons);
-            point.intensity = static_cast<float>(data.reflectivity);
+            point.intensity = static_cast<float>(data.signal_photons);
+            // point.intensity = static_cast<float>(data.reflectivity);
             point.timestamp = static_cast<double>(ts) * 1e-9; // nanosec -> sec
             point.channel = static_cast<uint16_t>(chan_idx);
             point.azimuth = azimuth_idx;
