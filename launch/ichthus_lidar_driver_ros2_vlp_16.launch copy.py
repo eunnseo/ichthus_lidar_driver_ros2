@@ -80,16 +80,16 @@ def launch_setup(context, *args, **kwargs):
             "use_sim_time": LaunchConfiguration("use_sim_time")
           }],
         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-      # ),
-      # ComposableNode(
-      #   package='ichthus_lidar_driver_ros2',
-      #   plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
-      #   name='backend_center',
-      #   parameters=[backend_center_param, 
-      #     {
-      #       "use_sim_time": LaunchConfiguration("use_sim_time")
-      #     }],
-      #   extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+      ),
+      ComposableNode(
+        package='ichthus_lidar_driver_ros2',
+        plugin='ichthus_lidar_driver_ros2::backend_node::BackendNode',
+        name='backend_center',
+        parameters=[backend_center_param, 
+          {
+            "use_sim_time": LaunchConfiguration("use_sim_time")
+          }],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
       )
     ]
   elif setup_type == "FRONT-REAR":

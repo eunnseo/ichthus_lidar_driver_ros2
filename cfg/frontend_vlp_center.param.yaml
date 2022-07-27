@@ -24,7 +24,7 @@
     ### lidar port selection: 7502, 7504
     ###
     ip_addr: "192.168.1.202"
-    lidar_port: 7302
+    lidar_port: 7505
 
     ###
     ### using imu
@@ -80,4 +80,4 @@
 
     used_range: ### in meter
       #START, END
-      [0.3,   120]
+      [0.9,   130]

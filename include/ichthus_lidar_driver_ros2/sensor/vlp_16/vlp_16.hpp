@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include <eigen3/Eigen/Core>
 
@@ -31,6 +32,8 @@ namespace ichthus_lidar_driver_ros2
         void initResolution();
 
         void initUsedPoints();
+
+        // double getRange(const char *dist_val1, const char *dist_val2);
 
         void msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud);
 

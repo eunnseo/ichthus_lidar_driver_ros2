@@ -139,7 +139,6 @@ namespace ichthus_lidar_driver_ros2
         if (!param_.use_pcap)
         {
           state = frontend_.poll();
-          std::cout << "state: " << state << std::endl;
           if (state == net::PacketState::EXIT)
           {
             RCLCPP_INFO(this->get_logger(), "poll_client: caught signal, exiting");

@@ -10,7 +10,7 @@ namespace ichthus_lidar_driver_ros2
       // std::cout << "before imu_sockfd_: " << imu_sockfd_ << std::endl;
 
       lidar_sockfd_ = net::create_udp_socket(lidar_port_);
-      // std::cout << "lidar_sockfd_:" << lidar_sockfd_ << std::endl;
+      std::cout << "lidar_port_:" << lidar_port_ << std::endl;
       imu_sockfd_ = net::create_udp_socket(imu_port_);
 
       std::cout << "after lidar_sockfd_: " << lidar_sockfd_ << std::endl;

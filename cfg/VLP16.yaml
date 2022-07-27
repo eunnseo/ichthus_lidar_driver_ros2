@@ -1,0 +1,8 @@
+/**:
+  ros__parameters:
+    # model: OSI-64
+    # ip_addr: 192.168.1.2
+    # lidar_port: 7502
+    
+    min_range: 0.9
+    max_range: 130.0
