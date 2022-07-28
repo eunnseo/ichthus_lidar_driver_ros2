@@ -1,4 +1,5 @@
 #include <ichthus_lidar_driver_ros2/sensor/vlp_16/vlp_16.hpp>
+
 #include <iomanip>
 
 namespace ichthus_lidar_driver_ros2
@@ -53,9 +54,10 @@ namespace ichthus_lidar_driver_ros2
 
       void Velodyne16::msg2Cloud(const std::vector<uint8_t> &pkt_msg_buf, pcl::PointCloud<pcl::PointXYZITCA> &out_cloud)
       {
+
         std::cout << '1' << std::endl;
-        double range_min = used_range_[0] * M_TO_MM;
-        double range_max = used_range_[1] * M_TO_MM;
+        // double range_min = used_range_[0] * M_TO_MM;
+        // double range_max = used_range_[1] * M_TO_MM;
 
         float azimuth;
         float azimuth_diff;
@@ -70,6 +72,9 @@ namespace ichthus_lidar_driver_ros2
 
         const vlp_16_packet::RawPacket *pkt_ptr = reinterpret_cast<const vlp_16_packet::RawPacket *>(&pkt_msg_buf[0]);
 
+        // float time_diff_start_to_this_packet =
+        //   (rclcpp::Time(pkt_ptr.stamp) - scan_start_time).seconds();
+
         for (uint32_t blk_idx = 0; blk_idx < NUM_BLOCK; blk_idx++) // data block 0~11
         {
 
@@ -80,7 +85,7 @@ namespace ichthus_lidar_driver_ros2
 
           azimuth = static_cast<float>(pkt_ptr->blocks[blk_idx].rotation);
 
-          if (blk_idx < (BLOCKS_PER_PACKET - 1))
+          if (blk_idx < (vlp_16_packet::BLOCKS_PER_PACKET_VLP16 - 1))
           {
             raw_azimuth_diff = pkt_ptr->blocks[blk_idx + 1].rotation - pkt_ptr->blocks[blk_idx].rotation;
             azimuth_diff = static_cast<float>((36000 + raw_azimuth_diff) % 36000);
@@ -113,26 +118,29 @@ namespace ichthus_lidar_driver_ros2
             azimuth_diff = last_azimuth_diff;
           }
 
-          for (int firing = 0, k = 0; firing < VLP16_FIRINGS_PER_BLOCK; firing++)
+          for (int firing = 0, k = 0; firing < vlp_16_packet::VLP16_FIRINGS_PER_BLOCK; firing++)
           {
-            for (int dsr = 0; dsr < VLP16_SCANS_PER_FIRING; dsr++, k += RAW_SCAN_SIZE)
+            for (int chan_idx = 0; chan_idx < vlp_16_packet::VLP16_SCANS_PER_FIRING; chan_idx++, k += vlp_16_packet::RAW_SCAN_SIZE)
             {
-              // velodyne_pointcloud::LaserCorrection &corrections = calibration_->laser_corrections[dsr];
+              // velodyne_pointcloud::LaserCorrection &corrections = calibration_->laser_corrections[chan_idx];
 
               /** Position Calculation */
-              union two_bytes tmp{};
-              tmp.bytes[0] = pkt_ptr->blocks[blk_idx].data[k];
-              tmp.bytes[1] = pkt_ptr->blocks[blk_idx].data[k + 1];
+              union vlp_16_packet::TwoBytes dist
+              {
+              };
+              dist.bytes[0] = pkt_ptr->blocks[blk_idx].data[k];
+              dist.bytes[1] = pkt_ptr->blocks[blk_idx].data[k + 1];
 
               /** correct for the laser rotation as a function of timing during the firings **/
               azimuth_corrected_f =
-                  azimuth + (azimuth_diff * ((dsr * VLP16_DSR_TOFFSET) + (firing * VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
+                  azimuth + (azimuth_diff * ((chan_idx * vlp_16_packet::VLP16_DSR_TOFFSET) + (firing * vlp_16_packet::VLP16_FIRING_TOFFSET)) / vlp_16_packet::VLP16_BLOCK_TDURATION);
               azimuth_corrected = (static_cast<int>(std::round(azimuth_corrected_f)) % 36000);
 
               /*condition added to avoid calculating points which are not
                 in the interesting defined area (min_angle < area < max_angle)*/
               int min_angle = 0;
               int max_angle = 36000;
+
               if ((azimuth_corrected >= min_angle &&
                    azimuth_corrected <= max_angle &&
                    min_angle < max_angle) ||
@@ -141,7 +149,7 @@ namespace ichthus_lidar_driver_ros2
                     azimuth_corrected >= min_angle)))
               {
                 // convert polar coordinates to Euclidean XYZ
-                float distance = tmp.uint * calibration_->distance_resolution_m;
+                float distance = dist.uint * 0.002;
                 distance += corrections.dist_correction;
 
                 float cos_vert_angle = corrections.cos_vert_correction;
@@ -152,11 +160,11 @@ namespace ichthus_lidar_driver_ros2
                 // cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
                 // sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
                 float cos_rot_angle =
-                    cos_rot_table_[azimuth_corrected] * cos_rot_correction +
-                    sin_rot_table_[azimuth_corrected] * sin_rot_correction;
+                    vlp_16_packet::cos_rot_table_[azimuth_corrected] * cos_rot_correction +
+                    vlp_16_packet::sin_rot_table_[azimuth_corrected] * sin_rot_correction;
                 float sin_rot_angle =
-                    sin_rot_table_[azimuth_corrected] * cos_rot_correction -
-                    cos_rot_table_[azimuth_corrected] * sin_rot_correction;
+                    vlp_16_packet::sin_rot_table_[azimuth_corrected] * cos_rot_correction -
+                    vlp_16_packet::cos_rot_table_[azimuth_corrected] * sin_rot_correction;
 
                 float horiz_offset = corrections.horiz_offset_correction;
                 float vert_offset = corrections.vert_offset_correction;
@@ -238,26 +246,38 @@ namespace ichthus_lidar_driver_ros2
 
                 intensity = pkt_ptr->blocks[blk_idx].data[k + 2];
 
-                float focal_offset = 256.0f * square(1.0f - corrections.focal_distance / 13100.0f);
+                float focal_offset = 256.0f * vlp_16_packet::square(1.0f - corrections.focal_distance / 13100.0f);
                 float focal_slope = corrections.focal_slope;
                 intensity += focal_slope *
-                             (std::abs(focal_offset - 256.0f * square((1.0f - distance) / 65535.0f)));
+                             (std::abs(focal_offset - 256.0f * vlp_16_packet::square((1.0f - distance) / 65535.0f)));
                 intensity = (intensity < min_intensity) ? min_intensity : intensity;
                 intensity = (intensity > max_intensity) ? max_intensity : intensity;
 
-                float time = 0;
-                if (timing_offsets_.size())
-                {
-                  time = timing_offsets_[blk_idx][firing * 16 + dsr] + time_diff_start_to_this_packet;
-                }
+                // float time = 0;
+                // if (timing_offsets_.size())
+                // {
+                //   time = timing_offsets_[blk_idx][firing * 16 + chan_idx] + time_diff_start_to_this_packet;
+                // }
 
-                data.addPoint(
-                    x_coord, y_coord, z_coord, corrections.laser_ring,
-                    distance, intensity, time);
+                // data.addPoint(
+                //     x_coord, y_coord, z_coord, corrections.laser_ring,
+                //     distance, intensity, pkt_ptr->timestamp);
+
+                pcl::PointXYZITCA point;
+                point.x = x_coord;
+                point.y = y_coord;
+                point.z = z_coord;
+
+                point.intensity = static_cast<float>(intensity);
+                point.timestamp = static_cast<double>(pkt_ptr->timestamp); // TODO: sec
+                point.channel = static_cast<uint16_t>(chan_idx);
+                point.azimuth = azimuth_corrected;
+
+                out_cloud.push_back(point);
               }
             }
 
-            data.newLine();
+            // data.newLine();
           }
         }
       }

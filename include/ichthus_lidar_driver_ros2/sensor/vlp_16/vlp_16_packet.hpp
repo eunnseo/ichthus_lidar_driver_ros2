@@ -30,12 +30,30 @@ namespace ichthus_lidar_driver_ros2
       static const float VLP16_DSR_TOFFSET = 2.304f;       // [µs]
       static const float VLP16_FIRING_TOFFSET = 55.296f;   // [µs]
 
+      static const float ROTATION_RESOLUTION = 0.01f;    // [deg]
+      static const uint16_t ROTATION_MAX_UNITS = 36000u; // [deg/100]
+
+      float sin_rot_table_[ROTATION_MAX_UNITS];
+      float cos_rot_table_[ROTATION_MAX_UNITS];
+
+      static const int PACKET_SIZE = 1206;
+      static const int BLOCKS_PER_PACKET_VLP16 = 12;
+      static const int PACKET_STATUS_SIZE = 4;
+      static const int SCANS_PER_PACKET = (SCANS_PER_BLOCK * BLOCKS_PER_PACKET_VLP16);
+
+      inline float square(float val)
+      {
+        return val * val;
+      }
+
+
+
       struct RawBlock
       {
         uint16_t header;   ///< UPPER_BANK or LOWER_BANK
         uint16_t rotation; ///< 0-35999, divide by 100 to get degrees
         uint8_t data[BLOCK_DATA_SIZE];
-      };
+      }; //100
 
       union TwoBytes
       {
@@ -43,16 +61,13 @@ namespace ichthus_lidar_driver_ros2
         uint8_t bytes[2];
       };
 
-      static const int PACKET_SIZE = 1206;
-      static const int BLOCKS_PER_PACKET = 12;
-      static const int PACKET_STATUS_SIZE = 4;
-      static const int SCANS_PER_PACKET = (SCANS_PER_BLOCK * BLOCKS_PER_PACKET);
-
       struct RawPacket
       {
-        RawBlock blocks[BLOCKS_PER_PACKET];
-        uint16_t revolution;
-        uint8_t status[PACKET_STATUS_SIZE];
+        RawBlock blocks[BLOCKS_PER_PACKET_VLP16]; //1200B
+        uint32_t timestamp; //4B
+        uint16_t factory; //2B
+        // uint16_t revolution; //2
+        // uint8_t status[PACKET_STATUS_SIZE]; //4
       };
 
     }

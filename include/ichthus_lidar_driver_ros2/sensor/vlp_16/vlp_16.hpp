@@ -5,6 +5,9 @@
 #include <string>
 #include <sstream>
 
+#include <cmath>
+#include <memory>
+
 #include <eigen3/Eigen/Core>
 
 #include <ichthus_lidar_driver_ros2/sensor/lidar_interface.hpp>
